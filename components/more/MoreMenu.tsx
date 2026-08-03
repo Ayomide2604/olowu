@@ -1,87 +1,174 @@
 import {
-    LogOut
+    LogOut,
+    User,
 } from "lucide-react";
+
+import Link from "next/link";
 
 
 type Props = {
     onLogout: () => void;
-}
+};
 
 
 export default function MoreMenu({
-    onLogout
+    onLogout,
 }: Props) {
 
 
     return (
 
-        <button
-
-            onClick={onLogout}
-
+        <div
             className="
-w-full
-p-5
-rounded-3xl
-bg-red-50
-text-red-600
-flex
-items-center
-gap-4
-"
-
+      space-y-4
+      "
         >
 
 
-            <div
+            {/* Profile */}
+
+            <Link
+
+                href="/profile"
+
                 className="
-w-11
-h-11
-rounded-2xl
-bg-red-100
-flex
-items-center
-justify-center
-"
+        w-full
+        p-5
+        rounded-3xl
+        bg-purple-50
+        text-purple-600
+        flex
+        items-center
+        gap-4
+        "
             >
 
-                <LogOut size={22} />
 
-            </div>
+                <div
+                    className="
+          w-11
+          h-11
+          rounded-2xl
+          bg-purple-100
+          flex
+          items-center
+          justify-center
+          "
+                >
+
+                    <User size={22} />
+
+                </div>
 
 
 
-            <div
+
+                <div
+                    className="
+          text-left
+          "
+                >
+
+                    <h3
+                        className="
+            font-semibold
+            "
+                    >
+                        Profile
+                    </h3>
+
+
+                    <p
+                        className="
+            text-sm
+            "
+                    >
+                        View and edit your profile
+                    </p>
+
+
+                </div>
+
+
+
+            </Link>
+
+
+
+
+
+            {/* Logout */}
+
+            <button
+
+                onClick={onLogout}
+
                 className="
-text-left
-"
+        w-full
+        p-5
+        rounded-3xl
+        bg-red-50
+        text-red-600
+        flex
+        items-center
+        gap-4
+        "
+
             >
 
-                <h3
+
+                <div
                     className="
-font-semibold
-"
+          w-11
+          h-11
+          rounded-2xl
+          bg-red-100
+          flex
+          items-center
+          justify-center
+          "
                 >
-                    Logout
-                </h3>
+
+                    <LogOut size={22} />
+
+                </div>
 
 
-                <p
+
+
+                <div
                     className="
-text-sm
-"
+          text-left
+          "
                 >
-                    Sign out of your account
-                </p>
+
+                    <h3
+                        className="
+            font-semibold
+            "
+                    >
+                        Logout
+                    </h3>
 
 
-            </div>
+                    <p
+                        className="
+            text-sm
+            "
+                    >
+                        Sign out of your account
+                    </p>
 
 
-        </button>
+                </div>
 
+
+            </button>
+
+
+
+        </div>
 
     );
-
 
 }

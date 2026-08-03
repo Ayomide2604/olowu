@@ -66,37 +66,16 @@ space-y-7
 
             <MoreHeader />
 
-
-            <ProfileCard />
-
-
-
             <MoreMenu
-
-                onLogout={() =>
-                    setShowLogoutModal(true)
-                }
-
+                onLogout={() => setShowLogoutModal(true)}
             />
 
-
-
-            {
-                showLogoutModal && (
-
-                    <LogoutConfirmModal
-
-                        onClose={() =>
-                            setShowLogoutModal(false)
-                        }
-
-                        onConfirm={logout}
-
-                    />
-
-                )
-
-            }
+            {showLogoutModal && (
+                <LogoutConfirmModal
+                    onClose={() => setShowLogoutModal(false)}
+                    onConfirm={logout}
+                />
+            )}
 
 
         </div>
