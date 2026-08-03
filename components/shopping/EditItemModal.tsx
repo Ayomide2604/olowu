@@ -3,9 +3,14 @@
 import { useState } from "react";
 import { X } from "lucide-react";
 
-export default function EditItemModal({ item, onClose, onSave }: any) {
-  const [name, setName] = useState(item.name);
+type Props = {
+  item: { id: string; title: string; quantity: string; completed: boolean; createdAt: string };
+  onClose: () => void;
+  onSaveAction: (item: any) => void;
+};
 
+export default function EditItemModal({ item, onClose, onSaveAction }: Props) {
+  const [title, setTitle] = useState(item.title);
   const [quantity, setQuantity] = useState(item.quantity);
 
   return (
@@ -58,8 +63,8 @@ space-y-4
 "
         >
           <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             className="
 w-full
 border
@@ -81,9 +86,9 @@ p-3
 
           <button
             onClick={() =>
-              onSave({
+              onSaveAction({
                 ...item,
-                name,
+                title,
                 quantity,
               })
             }

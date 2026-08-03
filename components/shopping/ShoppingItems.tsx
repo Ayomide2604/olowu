@@ -1,14 +1,11 @@
 import ShoppingItemCard from "./ShoppingItemCard";
-import { ShoppingItem } from "@/app/shopping/[id]/page";
+import { ShoppingItem } from "@/app/(protected)/shopping/[id]/page";
 
 type Props = {
   items: ShoppingItem[];
-
-  onToggle: (id: number) => void;
-
+  onToggle: (id: string) => void;
   onEdit: (item: ShoppingItem) => void;
-
-  onDelete: (id: number) => void;
+  onDelete: (id: string) => void;
 };
 
 export default function ShoppingItems({
@@ -26,7 +23,10 @@ space-y-4
       {items.map((item) => (
         <ShoppingItemCard
           key={item.id}
-          {...item}
+          id={item.id}
+          title={item.title}
+          quantity={item.quantity}
+          completed={item.completed}
           onToggle={() => onToggle(item.id)}
           onEdit={() => onEdit(item)}
           onDelete={() => onDelete(item.id)}

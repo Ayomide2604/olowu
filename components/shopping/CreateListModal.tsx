@@ -1,25 +1,54 @@
 "use client";
 
 import { useState } from "react";
-import { ShoppingCart, X } from "lucide-react";
+import { X } from "lucide-react";
+
 
 type Props = {
+
   onClose: () => void;
+
   onCreate: (name: string) => void;
+
 };
 
-export default function CreateListModal({ onClose, onCreate }: Props) {
-  const [name, setName] = useState("");
+
+
+export default function CreateListModal({
+  onClose,
+  onCreate
+}: Props) {
+
+
+  const [
+    name,
+    setName
+  ] = useState("");
+
+
+
+
 
   function handleCreate() {
-    const trimmed = name.trim();
 
-    if (!trimmed) return;
+    if (!name.trim())
+      return;
 
-    onCreate(trimmed);
+
+    onCreate(
+      name.trim()
+    );
+
   }
 
+
+
+
+
+
+
   return (
+
     <div
       className="
       fixed
@@ -32,132 +61,189 @@ export default function CreateListModal({ onClose, onCreate }: Props) {
       z-50
       "
     >
+
+
       <div
         className="
-        relative
+        bg-white
+        rounded-3xl
+        p-6
         w-full
         max-w-md
-        rounded-3xl
-        bg-white
-        p-6
-        shadow-xl
+        relative
         "
       >
-        {/* Close */}
+
+
 
         <button
+
           onClick={onClose}
+
           className="
           absolute
           right-5
           top-5
-          flex
-          h-9
-          w-9
-          items-center
-          justify-center
-          rounded-full
-          hover:bg-gray-100
           "
+
         >
-          <X size={20} />
+
+          <X />
+
         </button>
 
-        {/* Icon */}
+
+
+
+
+
+        <h2
+          className="
+          text-xl
+          font-bold
+          "
+        >
+
+          Create Shopping List
+
+        </h2>
+
+
+
+        <p
+          className="
+          mt-1
+          text-sm
+          text-gray-500
+          "
+        >
+
+          Organize your family shopping
+
+        </p>
+
+
+
+
+
+
 
         <div
           className="
-          mb-5
-          flex
-          h-14
-          w-14
-          items-center
-          justify-center
-          rounded-2xl
-          bg-purple-100
-          text-purple-600
+          mt-6
+          space-y-4
           "
         >
-          <ShoppingCart size={28} />
-        </div>
 
-        {/* Heading */}
 
-        <h2 className="text-xl font-bold">Create Shopping List</h2>
 
-        <p className="mt-1 text-sm text-gray-500">
-          Give your shopping list a name.
-        </p>
+          <div>
 
-        {/* Form */}
+            <label
+              className="
+              text-sm
+              font-medium
+              "
+            >
 
-        <div className="mt-6">
-          <label className="mb-2 block text-sm font-medium">List Name</label>
+              List Name
 
-          <input
-            autoFocus
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="e.g. Weekly Groceries"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleCreate();
+            </label>
+
+
+
+            <input
+
+              placeholder="Example: Weekly Groceries"
+
+              value={name}
+
+              onChange={(e) =>
+                setName(e.target.value)
               }
-            }}
-            className="
-            w-full
-            rounded-2xl
-            border
-            px-4
-            py-3
-            outline-none
-            transition
-            focus:border-purple-500
-            focus:ring-2
-            focus:ring-purple-500/20
-            "
-          />
-        </div>
 
-        {/* Actions */}
+              autoFocus
 
-        <div className="mt-8 space-y-3">
+              className="
+              mt-2
+              w-full
+              border
+              rounded-2xl
+              px-4
+              py-3
+              outline-none
+              focus:ring-2
+              focus:ring-purple-500
+              "
+
+            />
+
+          </div>
+
+
+
+
+
+
+
+
           <button
+
             onClick={handleCreate}
+
             disabled={!name.trim()}
+
             className="
             w-full
-            rounded-2xl
             bg-purple-600
-            py-3
-            font-medium
             text-white
-            transition
-            hover:bg-purple-700
-            disabled:cursor-not-allowed
+            py-3
+            rounded-2xl
+            font-medium
             disabled:opacity-40
             "
+
           >
+
             Create List
+
           </button>
 
+
+
+
+
+
           <button
+
             onClick={onClose}
+
             className="
             w-full
-            rounded-2xl
             bg-gray-100
             py-3
+            rounded-2xl
             font-medium
-            text-gray-700
-            transition
-            hover:bg-gray-200
             "
+
           >
+
             Cancel
+
           </button>
+
+
+
+
         </div>
+
+
+
       </div>
+
+
     </div>
+
   );
+
 }

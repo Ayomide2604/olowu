@@ -1,132 +1,404 @@
 "use client";
 
-import { useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
 
 import ShoppingHeader from "@/components/shopping/ShoppingHeader";
 import ShoppingLists from "@/components/shopping/ShoppingLists";
 import CreateListModal from "@/components/shopping/CreateListModal";
 import DeleteConfirmModal from "@/components/shopping/DeleteConfirmModal";
 import EditListModal from "@/components/shopping/EditListModal";
+
+import {
+  getShoppingLists,
+  createShoppingList,
+  updateShoppingList,
+  deleteShoppingList,
+} from "@/lib/supabase/shopping";
+
+import {
+  useAuth
+} from "@/context/AuthProvider";
+
+
 export type ShoppingList = {
-  id: number;
+
+  id: string;
+
   title: string;
+
   items: number;
+
   remaining: number;
+
   updated: string;
+
 };
 
+
+
+
+
 export default function ShoppingPage() {
-  const [shoppingLists, setShoppingLists] = useState<ShoppingList[]>([
-    {
-      id: 1,
-      title: "Weekly Groceries",
-      items: 8,
-      remaining: 3,
-      updated: "Today",
-    },
 
-    {
-      id: 2,
-      title: "Baby Supplies",
-      items: 5,
-      remaining: 2,
-      updated: "Yesterday",
-    },
 
-    {
-      id: 3,
-      title: "Home Essentials",
-      items: 12,
-      remaining: 8,
-      updated: "August 1",
-    },
-  ]);
+  const {
+    user
+  } = useAuth();
 
-  const [showCreate, setShowCreate] = useState(false);
 
-  const [editingList, setEditingList] = useState<ShoppingList | null>(null);
 
-  const [deletingList, setDeletingList] = useState<ShoppingList | null>(null);
+  const [
+    shoppingLists,
+    setShoppingLists
+  ] = useState<ShoppingList[]>([]);
 
-  function createList(name: string) {
-    const newList: ShoppingList = {
-      id: Date.now(),
-      title: name,
-      items: 0,
-      remaining: 0,
-      updated: "Just now",
-    };
 
-    setShoppingLists((prev) => [...prev, newList]);
-    setShowCreate(false);
+
+  const [
+    loading,
+    setLoading
+  ] = useState(true);
+
+
+
+  const [
+    showCreate,
+    setShowCreate
+  ] = useState(false);
+
+
+
+  const [
+    editingList,
+    setEditingList
+  ] = useState<ShoppingList | null>(null);
+
+
+
+  const [
+    deletingList,
+    setDeletingList
+  ] = useState<ShoppingList | null>(null);
+
+
+
+
+
+  useEffect(() => {
+
+    loadLists();
+
+  }, []);
+
+
+
+
+
+
+
+  async function loadLists() {
+
+
+    const data =
+      await getShoppingLists();
+
+
+
+    const formatted =
+      data.map((list: any) => ({
+
+        id: list.id,
+
+        title: list.name,
+
+        items:
+          list.shopping_items?.length ?? 0,
+
+
+        remaining:
+          list.shopping_items
+            ?.filter(
+              (item: any) =>
+                !item.completed
+            )
+            .length ?? 0,
+
+
+        updated:
+          new Date(
+            list.updated_at
+          )
+            .toLocaleDateString(),
+
+      }));
+
+
+
+    setShoppingLists(formatted);
+
+
+    setLoading(false);
+
+
   }
 
-  function updateList(id: number, name: string) {
-    setShoppingLists((prev) =>
-      prev.map((list) =>
-        list.id === id
-          ? {
-              ...list,
-              title: name,
-              updated: "Just now",
-            }
-          : list,
-      ),
+
+
+
+
+
+
+
+
+  async function createList(
+    name: string
+  ) {
+
+
+    if (!user) return;
+
+
+
+    await createShoppingList(
+
+      name,
+
+      user.id
+
     );
+
+
+
+    await loadLists();
+
+
+    setShowCreate(false);
+
+
+  }
+
+
+
+
+
+
+
+
+
+  async function updateList(
+    id: string,
+    name: string
+  ) {
+
+
+    await updateShoppingList(
+
+      id,
+
+      name
+
+    );
+
+
+    await loadLists();
+
 
     setEditingList(null);
+
+
   }
 
-  function deleteList() {
-    if (!deletingList) return;
 
-    setShoppingLists((prev) =>
-      prev.filter((list) => list.id !== deletingList.id),
+
+
+
+
+
+
+
+  async function deleteList() {
+
+
+    if (!deletingList)
+      return;
+
+
+
+    await deleteShoppingList(
+
+      deletingList.id
+
     );
 
+
+    await loadLists();
+
+
+
     setDeletingList(null);
+
+
   }
 
+
+
+
+
+
+
+
+  if (loading) {
+
+    return (
+
+      <div className="px-5 py-6">
+
+        Loading shopping lists...
+
+      </div>
+
+    );
+
+  }
+
+
+
+
+
+
+
+
   return (
+
     <div
       className="
-px-5
-py-6
-space-y-7
-"
+      px-5
+      py-6
+      space-y-7
+      "
     >
-      <ShoppingHeader onAdd={() => setShowCreate(true)} />
 
-      <ShoppingLists
-        lists={shoppingLists}
-        onEdit={(list) => setEditingList(list)}
-        onDelete={(list) => setDeletingList(list)}
+
+      <ShoppingHeader
+
+        onAdd={() =>
+          setShowCreate(true)
+        }
+
       />
 
-      {showCreate && (
+
+
+
+
+      <ShoppingLists
+
+        lists={shoppingLists}
+
+        onEdit={(list) =>
+          setEditingList(list)
+        }
+
+
+        onDelete={(list) =>
+          setDeletingList(list)
+        }
+
+      />
+
+
+
+
+
+
+
+      {
+        showCreate &&
+
         <CreateListModal
-          onClose={() => setShowCreate(false)}
+
+          onClose={() =>
+            setShowCreate(false)
+          }
+
+
           onCreate={createList}
-        />
-      )}
 
-      {editingList && (
+        />
+
+      }
+
+
+
+
+
+
+
+
+      {
+        editingList &&
+
         <EditListModal
-          name={editingList.title}
-          onClose={() => setEditingList(null)}
-          onSave={(newName) => {
-            updateList(editingList.id, newName);
-          }}
-        />
-      )}
 
-      {deletingList && (
-        <DeleteConfirmModal
-          listName={deletingList.title}
-          onClose={() => setDeletingList(null)}
-          onDelete={deleteList}
+          name={
+            editingList.title
+          }
+
+
+          onClose={() =>
+            setEditingList(null)
+          }
+
+
+          onSave={(name) => {
+
+            updateList(
+              editingList.id,
+              name
+            );
+
+          }}
+
         />
-      )}
+
+      }
+
+
+
+
+
+
+
+
+      {
+        deletingList &&
+
+        <DeleteConfirmModal
+
+          listName={
+            deletingList.title
+          }
+
+
+          onClose={() =>
+            setDeletingList(null)
+          }
+
+
+          onDelete={deleteList}
+
+        />
+
+      }
+
+
+
+
     </div>
+
   );
+
 }
