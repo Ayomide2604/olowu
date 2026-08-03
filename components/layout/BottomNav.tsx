@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Home,
   CheckSquare,
@@ -8,6 +9,7 @@ import {
   CalendarDays,
   Menu,
 } from "lucide-react";
+import { motion } from "framer-motion";
 
 const items = [
   {
@@ -25,11 +27,11 @@ const items = [
     href: "/shopping",
     icon: ShoppingCart,
   },
-    {
-      label: "Events",
-      href: "/events",
-      icon: CalendarDays,
-    },
+  {
+    label: "Events",
+    href: "/events",
+    icon: CalendarDays,
+  },
   {
     label: "More",
     href: "/more",
@@ -38,6 +40,8 @@ const items = [
 ];
 
 export default function BottomNav() {
+  const pathname = usePathname();
+
   return (
     <nav
       className="
@@ -58,6 +62,7 @@ justify-around
     >
       {items.map((item) => {
         const Icon = item.icon;
+        const isActive = pathname === item.href;
 
         return (
           <Link
@@ -68,13 +73,49 @@ flex
 flex-col
 items-center
 text-xs
-text-gray-500
 gap-1
+relative
 "
           >
-            <Icon size={21} />
+            <motion.div
+              className={`
+                relative
+                transition-colors
+                ${isActive ? "text-purple-600" : "text-gray-500"}
+              `}
+              whileTap={{ scale: 0.9 }}
+              whileHover={{ scale: 1.1 }}
+              transition={{
+                type: "spring",
+                stiffness: 400,
+                damping: 17,
+              }}
+            >
+              {isActive && (
+                <motion.div
+                  layoutId="activeTab"
+                  className="absolute -top-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-purple-600 rounded-full"
+                  transition={{
+                    type: "spring",
+                    stiffness: 380,
+                    damping: 30,
+                  }}
+                />
+              )}
+              <Icon size={21} />
+            </motion.div>
 
-            <span>{item.label}</span>
+            <motion.span
+              className={`
+                transition-colors
+                ${isActive ? "text-purple-600 font-medium" : "text-gray-500"}
+              `}
+              animate={{
+                opacity: isActive ? 1 : 0.7,
+              }}
+            >
+              {item.label}
+            </motion.span>
           </Link>
         );
       })}
