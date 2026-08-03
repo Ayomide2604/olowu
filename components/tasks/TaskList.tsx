@@ -4,13 +4,13 @@ import { Task } from "@/app/(protected)/tasks/page";
 type Props = {
   tasks: Task[];
 
-  onEdit: (task: Task) => void;
+  onEditAction: (task: Task) => void;
 
-  onDelete: (id: number) => void;
-  onToggle: (id: number) => void;
+  onDeleteAction: (id: number) => void;
+  onToggleAction: (id: number) => void;
 };
 
-export default function TaskList({ tasks, onEdit, onDelete, onToggle }: Props) {
+export default function TaskList({ tasks, onEditAction, onDeleteAction, onToggleAction }: Props) {
   return (
     <div
       className="
@@ -23,11 +23,11 @@ space-y-4
           task={task.task}
           date={task.date}
           time={task.time}
-          assignedTo={task.assignedTo}
+          assignedUsers={task.assignedUsers}
           completed={task.completed}
-          onToggle={() => onToggle(task.id)}
-          onEdit={() => onEdit(task)}
-          onDelete={() => onDelete(task.id)}
+          onToggleAction={() => onToggleAction(task.id)}
+          onEditAction={() => onEditAction(task)}
+          onDeleteAction={() => onDeleteAction(task.id)}
         />
       ))}
     </div>

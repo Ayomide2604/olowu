@@ -1,31 +1,64 @@
+import {
+  UserRound
+} from "lucide-react";
+
+
 type Props = {
-  name: string;
-  image?: string;
+  firstName: string;
+  lastName: string;
+  avatarUrl?: string | null;
 };
 
-export default function Avatar({ name, image }: Props) {
+
+export default function Avatar({
+  firstName,
+  lastName,
+  avatarUrl,
+}: Props) {
+
+
   return (
+
     <div
       className="
-w-12
-h-12
-rounded-full
-bg-gradient-to-br
-from-purple-500
-to-indigo-500
-flex
-items-center
-justify-center
-text-white
-font-semibold
-overflow-hidden
-"
+      w-12
+      h-12
+      rounded-full
+      bg-gradient-to-br
+      from-purple-500
+      to-indigo-500
+      flex
+      items-center
+      justify-center
+      text-white
+      font-semibold
+      overflow-hidden
+      "
     >
-      {image ? (
-        <img src={image} className="w-full h-full object-cover" />
-      ) : (
-        name.charAt(0)
-      )}
+
+      {
+        avatarUrl ? (
+
+          <img
+            src={avatarUrl}
+            alt={`${firstName} ${lastName}`}
+            className="
+            w-full
+            h-full
+            object-cover
+            "
+          />
+
+        ) : (
+
+          <UserRound size={15} />
+
+        )
+      }
+
+
     </div>
+
   );
+
 }

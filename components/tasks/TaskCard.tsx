@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
+
 import {
   CheckCircle2,
   Clock,
-  CalendarDays,
   MoreVertical,
   Pencil,
   Trash2,
@@ -13,216 +13,205 @@ import {
 import GlassCard from "@/components/ui/GlassCard";
 import Avatar from "@/components/ui/Avatar";
 
+function humanizeDate(dateStr: string): string {
+  const [year, month, day] = dateStr.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const diffTime = date.getTime() - today.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays === 0) return "Today";
+  if (diffDays === 1) return "Tomorrow";
+  if (diffDays === -1) return "Yesterday";
+  if (diffDays < -1) return `${Math.abs(diffDays)} days ago`;
+  if (diffDays <= 7) return `in ${diffDays} days`;
+
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+function formatTime(timeStr: string): string {
+  const [hours, minutes] = timeStr.split(":");
+  const hour = parseInt(hours, 10);
+  const ampm = hour >= 12 ? "PM" : "AM";
+  const hour12 = hour % 12 || 12;
+  return `${hour12}:${minutes} ${ampm}`;
+}
+
+function isOverdue(dateStr: string, timeStr: string): boolean {
+  const now = new Date();
+  const dueDate = new Date(`${dateStr}T${timeStr}`);
+  return dueDate < now;
+}
+
+
 type Props = {
+
   task: string;
+
   date: string;
+
   time: string;
-  assignedTo: string;
+
+
+  assignedUsers: {
+    id: string;
+    first_name: string;
+    last_name: string;
+    avatar_url?: string | null;
+  }[];
+
+
   completed: boolean;
 
-  onEdit: () => void;
-  onDelete: () => void;
-  onToggle: () => void;
+
+  onEditAction: () => void;
+
+  onDeleteAction: () => void;
+
+  onToggleAction: () => void;
+
 };
 
+
+
 export default function TaskCard({
+
   task,
+
   date,
+
   time,
-  assignedTo,
+
+  assignedUsers,
+
   completed,
-  onEdit,
-  onDelete,
-  onToggle,
+
+  onEditAction,
+
+  onDeleteAction,
+
+  onToggleAction,
+
 }: Props) {
+
+
   const [showMenu, setShowMenu] = useState(false);
 
   return (
     <GlassCard
-      className={`
-        p-5
-        relative
-        ${showMenu ? "z-50" : ""}
-      `}
+      className={`p-4 relative transition-all duration-200 hover:shadow-lg ${showMenu ? "z-50" : ""}`}
     >
-      <div
-        className="
-        flex
-        items-start
-        justify-between
-        "
-      >
-        {/* LEFT SIDE */}
-
-        <div
-          className="
-          flex
-          gap-3
-          "
+      <div className="flex items-start gap-3">
+        <button
+          onClick={onToggleAction}
+          className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-200 ${completed
+            ? "bg-[#dcfce7] text-[#22c55e]"
+            : "bg-[#eeecff] text-[#635bff] hover:bg-[#e0deff]"
+            }`}
         >
-          {/* COMPLETE BUTTON */}
+          <CheckCircle2 size={20} />
+        </button>
 
-          <button
-            onClick={onToggle}
-            className={`
-              w-11
-              h-11
-              rounded-2xl
-              flex
-              items-center
-              justify-center
-              transition
-
-              ${
-                completed
-                  ? "bg-green-100 text-green-600"
-                  : "bg-purple-100 text-purple-600 hover:bg-purple-200"
-              }
-
-            `}
+        <div className="flex-1 min-w-0">
+          <h3
+            className={`font-semibold text-base truncate ${completed
+              ? "line-through text-[#9ca3af]"
+              : "text-[#111827]"
+              }`}
           >
-            <CheckCircle2 size={22} />
-          </button>
+            {task}
+          </h3>
 
-          <div>
-            <h3
-              className={`
-                font-semibold
-
-                ${completed ? "line-through text-gray-400" : "text-gray-900"}
-
-              `}
-            >
-              {task}
-            </h3>
-
-            <div
-              className="
-              mt-2
-              space-y-1
-              text-sm
-              text-gray-500
-              "
-            >
-              <p
-                className="
-                flex
-                items-center
-                gap-2
-                "
-              >
-                <CalendarDays size={15} />
-
-                {date}
-              </p>
-
-              <p
-                className="
-                flex
-                items-center
-                gap-2
-                "
-              >
-                <Clock size={15} />
-
-                {time}
-              </p>
+          <div className="mt-2 flex flex-col gap-1.5">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#eeecff] border border-[#635bff]">
+              <span className="text-xs font-medium text-[#635bff]">{humanizeDate(date)}</span>
+            </div>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#eeecff] border border-[#635bff]">
+              <Clock size={12} className="text-[#635bff]" />
+              <span className="text-xs font-medium text-[#635bff]">{formatTime(time)}</span>
             </div>
           </div>
         </div>
 
-        {/* RIGHT SIDE */}
-
-        <div
-          className="
-          flex
-          items-center
-          gap-2
-          relative
-          "
-        >
-          <Avatar name={assignedTo} />
-
-          <button
-            onClick={() => setShowMenu(!showMenu)}
-            className="
-              w-9
-              h-9
-              rounded-full
-              flex
-              items-center
-              justify-center
-              hover:bg-gray-100
-            "
-          >
-            <MoreVertical size={20} />
-          </button>
-
-          {showMenu && (
-            <div
-              className="
-                  absolute
-                  right-0
-                  top-12
-                  w-36
-                  bg-white
-                  rounded-2xl
-                  shadow-xl
-                  border
-                  p-2
-                  z-[100]
-                "
-            >
-              {/* EDIT */}
-
-              <button
-                onClick={() => {
-                  setShowMenu(false);
-
-                  onEdit();
-                }}
-                className="
-                    flex
-                    items-center
-                    gap-2
-                    w-full
-                    px-3
-                    py-2
-                    rounded-xl
-                    hover:bg-gray-100
-                    text-sm
-                  "
-              >
-                <Pencil size={15} />
-                Edit
-              </button>
-
-              {/* DELETE */}
-
-              <button
-                onClick={() => {
-                  setShowMenu(false);
-
-                  onDelete();
-                }}
-                className="
-                    flex
-                    items-center
-                    gap-2
-                    w-full
-                    px-3
-                    py-2
-                    rounded-xl
-                    hover:bg-red-50
-                    text-red-500
-                    text-sm
-                  "
-              >
-                <Trash2 size={15} />
-                Delete
-              </button>
+        <div className="flex flex-col items-end gap-2 relative flex-shrink-0">
+          {!completed && isOverdue(date, time) && (
+            <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#fee2e2] border border-[#ef4444]">
+              <span className="text-[10px] font-semibold text-[#ef4444]">OVERDUE</span>
             </div>
           )}
+          <div className="flex items-center gap-2">
+            <div className="flex -space-x-1.5">
+              {assignedUsers && assignedUsers.length > 0 ? (
+                <>
+                  {assignedUsers.slice(0, 3).map((user) => (
+                    <div
+                      key={user.id}
+                      className="w-8 h-8 rounded-full bg-gradient-to-br from-[#635bff] to-[#5548ff] flex items-center justify-center text-white text-xs font-semibold border-2 border-white overflow-hidden"
+                    >
+                      {user.avatar_url ? (
+                        <img
+                          src={user.avatar_url}
+                          alt={`${user.first_name} ${user.last_name}`}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span>{user.first_name?.charAt(0) || "U"}</span>
+                      )}
+                    </div>
+                  ))}
+                  {assignedUsers.length > 3 && (
+                    <div className="w-8 h-8 rounded-full bg-[#f9fafb] flex items-center justify-center text-[#6b7280] text-xs font-medium border-2 border-white">
+                      +{assignedUsers.length - 3}
+                    </div>
+                  )}
+                </>
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-[#f9fafb] flex items-center justify-center border-2 border-[#e5e7eb]">
+                  <span className="text-[#9ca3af] text-[10px]">-</span>
+                </div>
+              )}
+            </div>
+
+            <button
+              onClick={() => setShowMenu(!showMenu)}
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-[#9ca3af] hover:bg-[#f9fafb] hover:text-[#6b7280] transition-colors duration-150"
+            >
+              <MoreVertical size={16} />
+            </button>
+
+            {showMenu && (
+              <div
+                className="absolute right-0 top-8 w-32 bg-white rounded-xl shadow-[0_10px_35px_rgba(0,0,0,0.12)] border border-[#e5e7eb] p-1 z-[100] animate-in fade-in slide-in-from-top-2 duration-200"
+              >
+                <button
+                  onClick={() => {
+                    setShowMenu(false);
+                    onEditAction();
+                  }}
+                  className="flex items-center gap-2 w-full px-3 py-2 rounded-lg hover:bg-[#f9fafb] text-sm text-[#111827] transition-colors duration-150"
+                >
+                  <Pencil size={14} />
+                  Edit
+                </button>
+
+                <button
+                  onClick={() => {
+                    setShowMenu(false);
+                    onDeleteAction();
+                  }}
+                  className="flex items-center gap-2 w-full px-3 py-2 rounded-lg hover:bg-[#fee2e2] text-[#ef4444] text-sm transition-colors duration-150"
+                >
+                  <Trash2 size={14} />
+                  Delete
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </GlassCard>

@@ -1,15 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
+
 
 import TaskHeader from "@/components/tasks/TaskHeader";
 import TaskSummary from "@/components/tasks/TaskSummary";
 import TaskFilters from "@/components/tasks/TaskFilters";
 import TaskList from "@/components/tasks/TaskList";
 import TaskModal from "@/components/tasks/TaskModal";
+import DeleteTakModal from "@/components/tasks/DeleteTakModal";
+
+import { useAuth } from "@/context/AuthProvider";
+
+
+import {
+  getTasks,
+  createTask,
+  updateTask,
+  deleteTask as removeTask,
+  assignUsersToTask,
+  updateTaskAssignments,
+} from "@/lib/supabase/tasks";
+
+
+
+
 
 export type Task = {
-  id: number;
+
+  id: string;
 
   task: string;
 
@@ -17,178 +39,629 @@ export type Task = {
 
   time: string;
 
-  assignedTo: "Ayomide" | "Asher" | "Boluwatife";
+
+  assignedUsers: {
+
+    id: string;
+
+    first_name: string;
+
+    last_name: string;
+
+    avatar_url?: string | null;
+
+  }[];
+
 
   completed: boolean;
 
-  createdAt: number;
+  createdAt: string;
+
 };
 
-const initialTasks: Task[] = [
-  {
-    id: 1,
-    task: "Buy groceries",
-    date: "2026-08-03",
-    time: "5:00 PM",
-    assignedTo: "Ayomide",
-    completed: false,
-    createdAt: Date.now() - 3000,
-  },
 
-  {
-    id: 2,
-    task: "Prepare baby's clothes",
-    date: "2026-08-04",
-    time: "8:00 PM",
-    assignedTo: "Boluwatife",
-    completed: false,
-    createdAt: Date.now() - 2000,
-  },
 
-  {
-    id: 3,
-    task: "Clean kitchen",
-    date: "2026-08-01",
-    time: "6:00 PM",
-    assignedTo: "Asher",
-    completed: true,
-    createdAt: Date.now() - 1000,
-  },
+
+
+
+const filters = [
+  "All",
+  "Today",
+  "Upcoming",
+  "Completed",
 ];
 
-const filters = ["All", "Today", "Upcoming", "Completed"];
+
+
+
+
+
+
 
 export default function TasksPage() {
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
-  const [activeFilter, setActiveFilter] = useState("All");
+  const { user } = useAuth();
 
-  const [showTaskModal, setShowTaskModal] = useState(false);
 
-  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [tasks, setTasks] =
+    useState<Task[]>([]);
 
-  const filteredTasks = tasks.filter((task) => {
-    switch (activeFilter) {
-      case "Today":
-        return task.date === new Date().toISOString().split("T")[0];
 
-      case "Upcoming":
-        return !task.completed;
 
-      case "Completed":
-        return task.completed;
+  const [loading, setLoading] =
+    useState(true);
 
-      case "All":
 
-      default:
-        return true;
-    }
-  });
 
-  function saveTask(data: {
-    task: string;
-    date: string;
-    time: string;
-    assignedTo: "Ayomide" | "Asher" | "Boluwatife";
-  }) {
-    if (editingTask) {
-      setTasks((prev) =>
-        prev.map((item) =>
-          item.id === editingTask.id
-            ? {
-                ...item,
-                ...data,
-              }
-            : item,
-        ),
-      );
+  const [activeFilter, setActiveFilter] =
+    useState("All");
 
-      setEditingTask(null);
-    } else {
-      setTasks((prev) => [
-        ...prev,
+
+
+  const [showTaskModal, setShowTaskModal] =
+    useState(false);
+
+
+
+  const [editingTask, setEditingTask] =
+    useState<Task | null>(null);
+
+
+
+  const [
+    showDeleteModal,
+    setShowDeleteModal
+  ] = useState(false);
+
+
+
+  const [
+    taskToDelete,
+    setTaskToDelete
+  ] = useState<string | null>(null);
+
+
+
+
+
+
+
+
+  useEffect(() => {
+
+    loadTasks();
+
+  }, []);
+
+
+
+
+
+
+
+
+  async function loadTasks() {
+
+
+    const data =
+      await getTasks();
+
+
+
+    setTasks(
+
+      data.map((item: any) => (
+
 
         {
-          id: Date.now(),
 
-          task: data.task,
+          id: item.id,
 
-          date: data.date,
 
-          time: data.time,
+          task: item.title,
 
-          assignedTo: data.assignedTo,
+
+          date: item.due_date,
+
+
+          time: item.due_time,
+
+
+
+          assignedUsers:
+            item.task_assignments?.map(
+              (assignment: any) =>
+                assignment.profiles
+            )
+            ?? [],
+
+
+
+          completed: item.completed,
+
+
+          createdAt: item.created_at,
+
+
+        }
+
+
+      ))
+
+    );
+
+
+
+    setLoading(false);
+
+
+  }
+
+
+
+
+
+
+
+
+
+  const filteredTasks =
+    tasks.filter((task) => {
+
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const [year, month, day] = task.date.split("-").map(Number);
+      const taskDate = new Date(year, month - 1, day);
+
+      switch (activeFilter) {
+
+        case "All":
+          return !task.completed;
+
+        case "Today":
+          return (
+            taskDate.getFullYear() === today.getFullYear() &&
+            taskDate.getMonth() === today.getMonth() &&
+            taskDate.getDate() === today.getDate()
+          );
+
+        case "Upcoming":
+          return !task.completed && taskDate > today;
+
+        case "Completed":
+          return task.completed;
+
+        default:
+          return true;
+
+      }
+
+
+    });
+
+
+
+
+
+
+
+
+
+  async function saveTask(data: {
+
+    task: string;
+
+    date: string;
+
+    time: string;
+
+    assignedUsers: string[];
+
+  }) {
+
+
+
+
+
+    if (editingTask) {
+
+
+
+      await updateTask(
+
+        editingTask.id,
+
+        {
+
+          title: data.task,
+
+          due_date: data.date,
+
+          due_time: data.time,
+
+        }
+
+      );
+
+
+
+
+      await updateTaskAssignments(
+        editingTask.id,
+        data.assignedUsers
+      );
+
+
+
+
+    }
+
+    else {
+
+
+
+      const newTask =
+        await createTask({
+
+          title: data.task,
+
+          due_date: data.date,
+
+          due_time: data.time,
 
           completed: false,
 
-          createdAt: Date.now(),
-        },
-      ]);
+        });
+
+
+
+
+
+      await assignUsersToTask(
+
+        newTask.id,
+
+        data.assignedUsers
+
+      );
+
+
+
     }
 
+
+
+
+
+
+
+    await loadTasks();
+
+
+
+    setEditingTask(null);
+
     setShowTaskModal(false);
+
+
   }
 
-  function deleteTask(id: number) {
-    setTasks((prev) => prev.filter((task) => task.id !== id));
+
+
+
+
+
+
+
+
+  async function deleteTask(id: string) {
+
+
+    setTaskToDelete(id);
+
+    setShowDeleteModal(true);
+
+
   }
 
-  function toggleTask(id: number) {
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id
-          ? {
-              ...task,
-              completed: !task.completed,
-            }
-          : task,
-      ),
+
+
+
+
+
+
+
+  async function confirmDelete() {
+
+
+    if (taskToDelete) {
+
+
+      await removeTask(taskToDelete);
+
+
+      await loadTasks();
+
+
+    }
+
+
+    setShowDeleteModal(false);
+
+
+    setTaskToDelete(null);
+
+
+  }
+
+
+
+
+
+
+
+
+
+  async function toggleTask(id: string) {
+
+
+    const task =
+      tasks.find(
+        (item) => item.id === id
+      );
+
+
+
+    if (!task) return;
+
+
+
+
+
+    await updateTask(
+
+      id,
+
+      {
+
+        completed:
+          !task.completed,
+
+      }
+
     );
+
+
+
+
+    await loadTasks();
+
+
   }
+
+
+
+
+
+
+
+
+
+  if (loading) {
+
+
+    return (
+
+      <div
+        className="
+px-5
+py-6
+"
+      >
+
+        Loading tasks...
+
+      </div>
+
+    );
+
+
+  }
+
+
+
+
+
+
+
+
+
 
   return (
+
     <div
+
       className="
-      px-5
-      py-6
-      space-y-7
-      "
+px-5
+py-6
+space-y-7
+"
+
     >
-      <TaskHeader onAdd={() => setShowTaskModal(true)} />
+
+
+
+      <TaskHeader
+
+        onAdd={() => setShowTaskModal(true)}
+
+      />
+
+
+
+
 
       <TaskSummary
+
+        myTasks={
+          tasks.filter(
+            (task) =>
+              !task.completed &&
+              task.assignedUsers.some(
+                (assignedUser) => assignedUser.id === user?.id
+              )
+          ).length
+        }
+
         total={tasks.length}
-        remaining={tasks.filter((task) => !task.completed).length}
+
+        completed={
+          tasks.filter(
+            (task) =>
+              task.completed
+          ).length
+        }
+
+        remaining={
+          tasks.filter(
+            (task) =>
+              !task.completed
+          ).length
+        }
+
       />
+
+
+
+
 
       <TaskFilters
+
         filters={filters}
+
         activeFilter={activeFilter}
+
         onChange={setActiveFilter}
+
       />
 
+
+
+
+
+
+
       <TaskList
+
+
         tasks={filteredTasks}
-        onEdit={(task) => {
+
+
+
+        onEditAction={(task) => {
+
           setEditingTask(task);
 
           setShowTaskModal(true);
+
         }}
-        onDelete={deleteTask}
-        onToggle={toggleTask}
+
+
+
+
+        onDeleteAction={deleteTask}
+
+
+
+        onToggleAction={toggleTask}
+
+
+
       />
 
-      {showTaskModal && (
-        <TaskModal
-          task={editingTask}
-          onClose={() => {
-            setShowTaskModal(false);
 
-            setEditingTask(null);
-          }}
-          onSave={saveTask}
-        />
-      )}
+
+
+
+
+
+
+
+
+      {
+        showTaskModal &&
+
+        (
+
+          <TaskModal
+
+
+            task={editingTask}
+
+
+
+            onCloseAction={() => {
+
+              setShowTaskModal(false);
+
+              setEditingTask(null);
+
+            }}
+
+
+
+
+            onSaveAction={saveTask}
+
+
+
+          />
+
+        )
+
+      }
+
+
+
+
+
+
+
+      {
+        showDeleteModal &&
+
+        (
+
+          <DeleteTakModal
+
+
+            onClose={() => {
+
+              setShowDeleteModal(false);
+
+              setTaskToDelete(null);
+
+            }}
+
+
+
+            onDelete={confirmDelete}
+
+
+
+          />
+
+        )
+
+      }
+
+
+
+
+
     </div>
+
   );
+
+
 }
