@@ -1,3 +1,7 @@
+"use client";
+
+import Link from "next/link";
+
 import {
   CheckCircle2,
   ShoppingCart,
@@ -28,6 +32,7 @@ const events: Event[] = [
     location: "Olowu Home",
     createdBy: "Ayomide",
   },
+
   {
     id: 2,
     title: "Doctor Appointment",
@@ -44,24 +49,31 @@ const overview = [
     value: 3,
     icon: CheckCircle2,
     color: "bg-green-100 text-green-600",
+    link: "/tasks",
   },
+
   {
     title: "Shopping",
     value: 5,
     icon: ShoppingCart,
     color: "bg-purple-100 text-purple-600",
+    link: "/shopping",
   },
+
   {
     title: "Events",
     value: 2,
     icon: CalendarDays,
     color: "bg-blue-100 text-blue-600",
+    link: "/events",
   },
+
   {
     title: "Birthdays",
     value: 1,
     icon: Cake,
     color: "bg-pink-100 text-pink-600",
+    link: "/birthdays",
   },
 ];
 
@@ -71,38 +83,38 @@ export default function Home() {
   return (
     <div
       className="
-px-5
-py-6
-space-y-8
-"
+      px-5
+      py-6
+      space-y-8
+      "
     >
       {/* Welcome */}
 
       <section>
         <p
           className="
-text-sm
-text-gray-500
-"
+          text-sm
+          text-gray-500
+          "
         >
           Good morning 👋
         </p>
 
         <h1
           className="
-text-3xl
-font-bold
-tracking-tight
-"
+          text-3xl
+          font-bold
+          tracking-tight
+          "
         >
           Ayomide
         </h1>
 
         <p
           className="
-text-gray-500
-mt-2
-"
+          text-gray-500
+          mt-2
+          "
         >
           Here is your family overview.
         </p>
@@ -113,18 +125,36 @@ mt-2
       <GlassCard className="p-5">
         <div
           className="
-flex
-justify-between
-items-center
-"
+          flex
+          justify-between
+          items-center
+          "
         >
           <div>
-            <h2 className="font-semibold">Olowu Family</h2>
+            <h2
+              className="
+              font-semibold
+              "
+            >
+              Olowu Family
+            </h2>
 
-            <p className="text-sm text-gray-500">3 members</p>
+            <p
+              className="
+              text-sm
+              text-gray-500
+              "
+            >
+              3 members
+            </p>
           </div>
 
-          <div className="flex -space-x-3">
+          <div
+            className="
+            flex
+            -space-x-3
+            "
+          >
             {familyMembers.map((member) => (
               <Avatar key={member} name={member} />
             ))}
@@ -137,58 +167,72 @@ items-center
       <section>
         <h2
           className="
-font-semibold
-mb-4
-"
+          font-semibold
+          mb-4
+          "
         >
           Overview
         </h2>
 
         <div
           className="
-grid
-grid-cols-2
-gap-4
-"
+          grid
+          grid-cols-2
+          gap-4
+          "
         >
           {overview.map((item) => {
             const Icon = item.icon;
 
             return (
-              <GlassCard key={item.title} className="p-4">
-                <div
-                  className={`
-w-11
-h-11
-rounded-2xl
-flex
-items-center
-justify-center
-${item.color}
-`}
-                >
-                  <Icon size={22} />
-                </div>
-
-                <p
+              <Link
+                key={item.title}
+                href={item.link}
+                className="
+                  block
+                  "
+              >
+                <GlassCard
                   className="
-text-3xl
-font-bold
-mt-4
-"
+                    p-4
+                    hover:scale-[1.02]
+                    transition
+                    "
                 >
-                  {item.value}
-                </p>
+                  <div
+                    className={`
+                      w-11
+                      h-11
+                      rounded-2xl
+                      flex
+                      items-center
+                      justify-center
+                      ${item.color}
+                      `}
+                  >
+                    <Icon size={22} />
+                  </div>
 
-                <p
-                  className="
-text-sm
-text-gray-500
-"
-                >
-                  {item.title}
-                </p>
-              </GlassCard>
+                  <p
+                    className="
+                      text-3xl
+                      font-bold
+                      mt-4
+                      "
+                  >
+                    {item.value}
+                  </p>
+
+                  <p
+                    className="
+                      text-sm
+                      text-gray-500
+                      "
+                  >
+                    {item.title}
+                  </p>
+                </GlassCard>
+              </Link>
             );
           })}
         </div>
@@ -199,34 +243,35 @@ text-gray-500
       <section>
         <div
           className="
-flex
-justify-between
-items-center
-mb-4
-"
+          flex
+          justify-between
+          items-center
+          mb-4
+          "
         >
           <h2
             className="
-font-semibold
-"
+            font-semibold
+            "
           >
             Upcoming Events
           </h2>
 
-          <button
+          <Link
+            href="/events"
             className="
-text-sm
-text-purple-600
-"
+            text-sm
+            text-purple-600
+            "
           >
             View all
-          </button>
+          </Link>
         </div>
 
         <div
           className="
-space-y-4
-"
+          space-y-4
+          "
         >
           {events.map((event) => {
             const initials = event.createdBy
@@ -238,58 +283,61 @@ space-y-4
               <GlassCard key={event.id} className="p-5">
                 <div
                   className="
-flex
-justify-between
-"
+                    flex
+                    justify-between
+                    "
                 >
                   <div>
                     <h3
                       className="
-font-semibold
-text-lg
-"
+                        font-semibold
+                        text-lg
+                        "
                     >
                       {event.title}
                     </h3>
 
                     <div
                       className="
-mt-3
-space-y-2
-text-sm
-text-gray-500
-"
+                        mt-3
+                        space-y-2
+                        text-sm
+                        text-gray-500
+                        "
                     >
                       <p
                         className="
-flex
-items-center
-gap-2
-"
+                          flex
+                          items-center
+                          gap-2
+                          "
                       >
                         <CalendarDays size={16} />
+
                         {event.date}
                       </p>
 
                       <p
                         className="
-flex
-items-center
-gap-2
-"
+                          flex
+                          items-center
+                          gap-2
+                          "
                       >
                         <Clock size={16} />
+
                         {event.time}
                       </p>
 
                       <p
                         className="
-flex
-items-center
-gap-2
-"
+                          flex
+                          items-center
+                          gap-2
+                          "
                       >
                         <MapPin size={16} />
+
                         {event.location}
                       </p>
                     </div>
@@ -297,16 +345,16 @@ gap-2
 
                   <div
                     className="
-w-10
-h-10
-rounded-full
-bg-purple-100
-text-purple-700
-flex
-items-center
-justify-center
-font-semibold
-"
+                      w-10
+                      h-10
+                      rounded-full
+                      bg-purple-100
+                      text-purple-700
+                      flex
+                      items-center
+                      justify-center
+                      font-semibold
+                      "
                   >
                     {initials}
                   </div>
