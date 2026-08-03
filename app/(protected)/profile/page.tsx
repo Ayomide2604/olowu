@@ -17,6 +17,10 @@ import {
 } from "@/lib/supabase/profile";
 
 
+import {
+    uploadAvatar
+} from "@/lib/supabase/storage";
+
 import ProfileHeader from "@/components/profile/ProfileHeader";
 
 import ProfileAvatar from "@/components/profile/ProfileAvatar";
@@ -153,6 +157,39 @@ export default function ProfilePage() {
 
     }
 
+    async function handleAvatarUpload(
+        file: File
+    ) {
+
+        if (!user) return;
+
+
+        const url =
+            await uploadAvatar(
+                user.id,
+                file
+            );
+
+
+        setAvatarUrl(url);
+
+
+
+        await updateProfile(
+
+            user.id,
+
+            {
+                avatar_url: url,
+                first_name: firstName,
+                last_name: lastName
+            }
+
+        );
+
+
+    }
+
 
 
 
@@ -222,7 +259,11 @@ export default function ProfilePage() {
                 >
 
                     <ProfileAvatar
+
                         image={avatarUrl}
+
+                        onUpload={handleAvatarUpload}
+
                     />
 
 

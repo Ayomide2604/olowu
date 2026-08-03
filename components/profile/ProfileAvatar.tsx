@@ -1,3 +1,5 @@
+"use client";
+
 import {
     Camera
 } from "lucide-react";
@@ -5,12 +7,33 @@ import {
 
 type Props = {
     image?: string;
+    onUpload: (file: File) => void;
 };
 
 
 export default function ProfileAvatar({
-    image
+    image,
+    onUpload
 }: Props) {
+
+
+    function handleFileChange(
+        e: React.ChangeEvent<HTMLInputElement>
+    ) {
+
+        const file = e.target.files?.[0];
+
+
+        if (file) {
+
+            onUpload(file);
+
+        }
+
+    }
+
+
+
 
     return (
 
@@ -39,17 +62,23 @@ overflow-hidden
 
                 {
                     image
+
                         ?
+
                         <img
                             src={image}
+                            alt="Profile"
                             className="
 w-full
 h-full
 object-cover
 "
                         />
+
                         :
+
                         "👤"
+
                 }
 
             </div>
@@ -57,7 +86,28 @@ object-cover
 
 
 
-            <button
+
+            <input
+
+                id="avatar-upload"
+
+                type="file"
+
+                accept="image/*"
+
+                className="hidden"
+
+                onChange={handleFileChange}
+
+            />
+
+
+
+
+
+            <label
+
+                htmlFor="avatar-upload"
 
                 className="
 absolute
@@ -72,13 +122,14 @@ flex
 items-center
 justify-center
 shadow
+cursor-pointer
 "
 
             >
 
                 <Camera size={18} />
 
-            </button>
+            </label>
 
 
 
