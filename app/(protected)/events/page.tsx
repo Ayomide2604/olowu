@@ -1,103 +1,141 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import EventHeader from "@/components/events/EventHeader";
-
 import EventList, { Event } from "@/components/events/EventList";
-
 import EventModal from "@/components/events/EventModal";
+import ConfirmModal from "@/components/ui/ConfirmModal";
 
-const initialEvents: Event[] = [
-  {
-    id: 1,
+import { useAuth } from "@/context/AuthProvider";
 
-    title: "Family Dinner",
-
-    date: "2026-08-10",
-
-    time: "18:00",
-
-    location: "Olowu Home",
-
-    createdBy: "Ayomide",
-
-    createdAt: Date.now() - 3000,
-  },
-
-  {
-    id: 2,
-
-    title: "Doctor Appointment",
-
-    date: "2026-08-15",
-
-    time: "10:30",
-
-    location: "Beaumont Medical Centre",
-
-    createdBy: "Wife",
-
-    createdAt: Date.now() - 2000,
-  },
-];
+import {
+  getEvents,
+  createEvent,
+  updateEvent,
+  deleteEvent as removeEvent,
+} from "@/lib/supabase/events";
 
 export default function EventsPage() {
-  const [events, setEvents] = useState<Event[]>(initialEvents);
+  const { user } = useAuth();
+
+  const [events, setEvents] = useState<Event[]>([]);
+
+  const [loading, setLoading] = useState(true);
 
   const [showModal, setShowModal] = useState(false);
 
-  const [editingEvent, setEditingEvent] = useState<Event | null>(null);
+  const [editingEvent, setEditingEvent] =
+    useState<Event | null>(null);
 
-  function saveEvent(data: Omit<Event, "id" | "createdAt">) {
+  const [eventToDelete, setEventToDelete] =
+    useState<string | null>(null);
+
+  useEffect(() => {
+    loadEvents();
+  }, []);
+
+  async function loadEvents() {
+    const data = await getEvents();
+
+    setEvents(
+      data.map((event: any) => ({
+        id: event.id,
+
+        title: event.title,
+
+        date: event.event_date,
+
+        time: event.event_time,
+
+        location: event.location,
+
+        createdBy: event.profiles
+          ? `${event.profiles.first_name} ${event.profiles.last_name}`
+          : "Unknown",
+
+        createdById: event.created_by,
+
+        avatarUrl: event.profiles?.avatar_url,
+
+        createdAt: event.created_at,
+      })),
+    );
+
+    setLoading(false);
+  }
+
+  async function saveEvent(data: {
+    title: string;
+    date: string;
+    time: string;
+    location: string;
+  }) {
+    if (!user) return;
+
     if (editingEvent) {
-      setEvents((prev) =>
-        prev.map((item) =>
-          item.id === editingEvent.id
-            ? {
-                ...item,
-                ...data,
-              }
-            : item,
-        ),
-      );
-
-      setEditingEvent(null);
+      await updateEvent(editingEvent.id, {
+        title: data.title,
+        event_date: data.date,
+        event_time: data.time,
+        location: data.location,
+      });
     } else {
-      setEvents((prev) => [
-        ...prev,
-
-        {
-          id: Date.now(),
-
-          ...data,
-
-          createdAt: Date.now(),
-        },
-      ]);
+      await createEvent({
+        title: data.title,
+        location: data.location,
+        event_date: data.date,
+        event_time: data.time
+      });
     }
+
+    await loadEvents();
+
+    setEditingEvent(null);
 
     setShowModal(false);
   }
 
-  function deleteEvent(id: number) {
-    setEvents((prev) => prev.filter((item) => item.id !== id));
+  async function deleteEvent(id: string) {
+    setEventToDelete(id);
+  }
+
+  async function confirmDelete() {
+    if (eventToDelete) {
+      await removeEvent(eventToDelete);
+      await loadEvents();
+      setEventToDelete(null);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="px-5 py-6">
+        Loading events...
+      </div>
+    );
   }
 
   return (
     <div
       className="
-px-5
-py-6
-space-y-7
-"
+      px-5
+      py-6
+      space-y-7
+      "
     >
-      <EventHeader onAdd={() => setShowModal(true)} />
+      <EventHeader
+        onAdd={() => setShowModal(true)}
+      />
 
       <EventList
-        events={[...events].sort(
-          (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-        )}
+        events={[...events].sort((a, b) => {
+          const first = new Date(`${a.date}T${a.time}`);
+
+          const second = new Date(`${b.date}T${b.time}`);
+
+          return first.getTime() - second.getTime();
+        })}
         onEdit={(event) => {
           setEditingEvent(event);
 
@@ -115,6 +153,17 @@ space-y-7
             setEditingEvent(null);
           }}
           onSave={saveEvent}
+        />
+      )}
+
+      {eventToDelete && (
+        <ConfirmModal
+          title="Delete Event"
+          message="Are you sure you want to delete this event? This action cannot be undone."
+          confirmText="Delete"
+          cancelText="Cancel"
+          onConfirm={confirmDelete}
+          onCancel={() => setEventToDelete(null)}
         />
       )}
     </div>

@@ -25,6 +25,8 @@ type Props = {
 
   createdBy: string;
 
+  avatarUrl?: string | null;
+
   onEdit: () => void;
 
   onDelete: () => void;
@@ -36,6 +38,7 @@ export default function EventCard({
   time,
   location,
   createdBy,
+  avatarUrl,
 
   onEdit,
   onDelete,
@@ -151,15 +154,28 @@ export default function EventCard({
             w-10
             h-10
             rounded-full
-            bg-purple-100
-            text-purple-700
+            bg-gradient-to-br
+            from-purple-600
+            to-purple-700
             flex
             items-center
             justify-center
+            text-white
             font-semibold
+            overflow-hidden
+            border-2
+            border-white
             "
           >
-            {initials}
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={createdBy}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span>{initials}</span>
+            )}
           </div>
 
           <button

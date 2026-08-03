@@ -11,7 +11,7 @@ type Props = {
 
   onClose: () => void;
 
-  onSave: (data: Omit<Event, "id" | "createdAt">) => void;
+  onSave: (data: Omit<Event, "id" | "createdAt" | "createdBy" | "createdById" | "avatarUrl">) => void;
 };
 
 export default function EventModal({
@@ -29,7 +29,6 @@ export default function EventModal({
 
   const [location, setLocation] = useState(event?.location || "");
 
-  const [createdBy, setCreatedBy] = useState(event?.createdBy || "Ayomide");
 
   function handleSave() {
     if (!title || !date || !time) return;
@@ -42,8 +41,6 @@ export default function EventModal({
       time,
 
       location,
-
-      createdBy,
     });
   }
 
@@ -114,86 +111,81 @@ export default function EventModal({
           space-y-4
           "
         >
-          <input
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Event title"
-            className="
-            w-full
-            px-4
-            py-3
-            rounded-2xl
-            border
-            outline-none
-            focus:ring-2
-            focus:ring-purple-500
-            app-input
-            appearance-none
-            "
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Event title</label>
+            <input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="
+              w-full
+              px-4
+              py-3
+              rounded-2xl
+              border
+              outline-none
+              focus:ring-2
+              focus:ring-purple-500
+              app-input
+              appearance-none
+              "
+            />
+          </div>
 
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="
-            w-full
-            px-4
-            py-3
-            rounded-2xl
-            border
-            app-input
-            appearance-none
-            "
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+            <input
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              className="
+              w-full
+              px-4
+              py-3
+              rounded-2xl
+              border
+               app-input
+              appearance-none
+              "
+            />
+          </div>
 
-          <input
-            type="time"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-            className="
-            w-full
-            px-4
-            py-3
-            rounded-2xl
-            border
-            app-input
-            appearance-none
-            "
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
+            <input
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className="
+              w-full
+              px-4
+              py-3
+              rounded-2xl
+              border
+              app-input
+              appearance-none
+              "
+            />
+          </div>
 
-          <input
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            placeholder="Location"
-            className="
-            w-full
-            px-4
-            py-3
-            rounded-2xl
-            border
-             app-input
-            appearance-none
-            "
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Time</label>
+            <input
+              type="time"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              className="
+              w-full
+              px-4
+              py-3
+              rounded-2xl
+              border
+              app-input
+              appearance-none
+              "
+            />
+          </div>
 
-          <select
-            value={createdBy}
-            onChange={(e) => setCreatedBy(e.target.value)}
-            className="
-            w-full
-            px-4
-            py-3
-            rounded-2xl
-            border
-            "
-          >
-            <option>Ayomide</option>
 
-            <option>Wife</option>
 
-            <option>Asher</option>
-          </select>
 
           <button
             onClick={handleSave}

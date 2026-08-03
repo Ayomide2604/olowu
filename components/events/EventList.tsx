@@ -2,7 +2,7 @@ import EventCard from "./EventCard";
 
 
 export type Event = {
-  id: number;
+  id: string;
 
   title: string;
 
@@ -14,7 +14,11 @@ export type Event = {
 
   createdBy: string;
 
-  createdAt: number;
+  createdById: string;
+
+  avatarUrl?: string | null;
+
+  createdAt: string;
 };
 
 
@@ -24,7 +28,7 @@ type Props = {
 
   onEdit: (event: Event) => void;
 
-  onDelete: (id: number) => void;
+  onDelete: (id: string) => void;
 };
 
 
@@ -60,6 +64,8 @@ export default function EventList({
             location={event.location}
 
             createdBy={event.createdBy}
+
+            avatarUrl={event.avatarUrl}
 
             onEdit={() =>
               onEdit(event)
