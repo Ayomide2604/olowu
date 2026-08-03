@@ -210,3 +210,16 @@ export async function deleteShoppingItem(id: string) {
 		throw error;
 	}
 }
+
+export async function getUncompletedShoppingItemsCount() {
+	const { data, error, count } = await supabase
+		.from("shopping_items")
+		.select("*", { count: "exact", head: true })
+		.eq("completed", false);
+
+	if (error) {
+		throw error;
+	}
+
+	return count || 0;
+}

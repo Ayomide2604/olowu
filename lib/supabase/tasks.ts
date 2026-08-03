@@ -137,3 +137,15 @@ export async function deleteTask(id: string) {
 		throw error;
 	}
 }
+
+export async function getTasksCount() {
+	const { data, error, count } = await supabase
+		.from("tasks")
+		.select("*", { count: "exact", head: true });
+
+	if (error) {
+		throw error;
+	}
+
+	return count || 0;
+}

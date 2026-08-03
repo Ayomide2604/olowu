@@ -7,6 +7,8 @@ import EventList, { Event } from "@/components/events/EventList";
 import EventModal from "@/components/events/EventModal";
 import EventFilters from "@/components/events/EventFilters";
 import ConfirmModal from "@/components/ui/ConfirmModal";
+import LoadingOverlay from "@/components/ui/LoadingOverlay";
+import CardSkeleton from "@/components/ui/CardSkeleton";
 
 import { useAuth } from "@/context/AuthProvider";
 
@@ -147,70 +149,82 @@ export default function EventsPage() {
     }
   });
 
-  if (loading) {
-    return (
-      <div className="px-5 py-6">
-        Loading events...
-      </div>
-    );
-  }
-
   return (
-    <div
-      className="
+    <>
+      <div
+        className="
+        px-5
+        py-6
+        space-y-7
+        "
+      >
+        <div
+          className="
       px-5
       py-6
       space-y-7
       "
-    >
-      <EventHeader
-        onAdd={() => setShowModal(true)}
-      />
+        >
+          <EventHeader
+            onAdd={() => setShowModal(true)}
+          />
 
-      <EventFilters
-        filters={filters}
-        activeFilter={activeFilter}
-        onChange={setActiveFilter}
-      />
+          <EventFilters
+            filters={filters}
+            activeFilter={activeFilter}
+            onChange={setActiveFilter}
+          />
 
-      <EventList
-        events={[...filteredEvents].sort((a, b) => {
-          const first = new Date(`${a.date}T${a.time}`);
+          {loading ? (
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <CardSkeleton key={i} />
+              ))}
+            </div>
+          ) : (
+            <EventList
+              events={[...filteredEvents].sort((a, b) => {
+                const first = new Date(`${a.date}T${a.time}`);
 
-          const second = new Date(`${b.date}T${b.time}`);
+                const second = new Date(`${b.date}T${b.time}`);
 
-          return first.getTime() - second.getTime();
-        })}
-        onEdit={(event) => {
-          setEditingEvent(event);
+                return first.getTime() - second.getTime();
+              })}
+              onEdit={(event) => {
+                setEditingEvent(event);
 
-          setShowModal(true);
-        }}
-        onDelete={deleteEvent}
-      />
+                setShowModal(true);
+              }}
+              onDelete={deleteEvent}
+            />
+          )}
 
-      {showModal && (
-        <EventModal
-          event={editingEvent}
-          onClose={() => {
-            setShowModal(false);
+          {showModal && (
+            <EventModal
+              event={editingEvent}
+              onClose={() => {
+                setShowModal(false);
 
-            setEditingEvent(null);
-          }}
-          onSave={saveEvent}
-        />
-      )}
+                setEditingEvent(null);
+              }}
+              onSave={saveEvent}
+            />
+          )}
 
-      {eventToDelete && (
-        <ConfirmModal
-          title="Delete Event"
-          message="Are you sure you want to delete this event? This action cannot be undone."
-          confirmText="Delete"
-          cancelText="Cancel"
-          onConfirm={confirmDelete}
-          onCancel={() => setEventToDelete(null)}
-        />
-      )}
-    </div>
+          {eventToDelete && (
+            <ConfirmModal
+              title="Delete Event"
+              message="Are you sure you want to delete this event? This action cannot be undone."
+              confirmText="Delete"
+              cancelText="Cancel"
+              onConfirm={confirmDelete}
+              onCancel={() => setEventToDelete(null)}
+            />
+          )}
+        </div>
+      </div>
+
+      <LoadingOverlay isLoading={loading} message="Loading events..." />
+    </>
   );
 }

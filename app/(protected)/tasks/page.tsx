@@ -12,6 +12,8 @@ import TaskFilters from "@/components/tasks/TaskFilters";
 import TaskList from "@/components/tasks/TaskList";
 import TaskModal from "@/components/tasks/TaskModal";
 import DeleteTakModal from "@/components/tasks/DeleteTakModal";
+import LoadingOverlay from "@/components/ui/LoadingOverlay";
+import CardSkeleton from "@/components/ui/CardSkeleton";
 
 import { useAuth } from "@/context/AuthProvider";
 
@@ -24,7 +26,6 @@ import {
   assignUsersToTask,
   updateTaskAssignments,
 } from "@/lib/supabase/tasks";
-
 
 
 
@@ -64,14 +65,13 @@ export type Task = {
 
 
 
+
 const filters = [
   "All",
   "Today",
   "Upcoming",
   "Completed",
 ];
-
-
 
 
 
@@ -125,15 +125,11 @@ export default function TasksPage() {
 
 
 
-
-
   useEffect(() => {
 
     loadTasks();
 
   }, []);
-
-
 
 
 
@@ -147,47 +143,21 @@ export default function TasksPage() {
       await getTasks();
 
 
-
     setTasks(
-
-      data.map((item: any) => (
-
-
-        {
-
-          id: item.id,
-
-
-          task: item.title,
-
-
-          date: item.due_date,
-
-
-          time: item.due_time,
-
-
-
-          assignedUsers:
-            item.task_assignments?.map(
-              (assignment: any) =>
-                assignment.profiles
-            )
-            ?? [],
-
-
-
-          completed: item.completed,
-
-
-          createdAt: item.created_at,
-
-
-        }
-
-
-      ))
-
+      data.map((item: any) => ({
+        id: item.id,
+        task: item.title,
+        date: item.due_date,
+        time: item.due_time,
+        assignedUsers:
+          item.task_assignments?.map(
+            (assignment: any) =>
+              assignment.profiles
+          )
+          ?? [],
+        completed: item.completed,
+        createdAt: item.created_at,
+      }))
     );
 
 
@@ -196,10 +166,6 @@ export default function TasksPage() {
 
 
   }
-
-
-
-
 
 
 
@@ -238,10 +204,6 @@ export default function TasksPage() {
 
 
     });
-
-
-
-
 
 
 
@@ -316,7 +278,6 @@ export default function TasksPage() {
 
 
 
-
       await assignUsersToTask(
 
         newTask.id,
@@ -326,17 +287,12 @@ export default function TasksPage() {
       );
 
 
-
     }
 
 
 
 
-
-
-
     await loadTasks();
-
 
 
     setEditingTask(null);
@@ -350,17 +306,11 @@ export default function TasksPage() {
 
 
 
-
-
-
-
   async function deleteTask(id: string) {
-
 
     setTaskToDelete(id);
 
     setShowDeleteModal(true);
-
 
   }
 
@@ -368,20 +318,13 @@ export default function TasksPage() {
 
 
 
-
-
-
   async function confirmDelete() {
-
 
     if (taskToDelete) {
 
-
       await removeTask(taskToDelete);
 
-
       await loadTasks();
-
 
     }
 
@@ -398,12 +341,7 @@ export default function TasksPage() {
 
 
 
-
-
-
-
   async function toggleTask(id: string) {
-
 
     const task =
       tasks.find(
@@ -411,9 +349,7 @@ export default function TasksPage() {
       );
 
 
-
     if (!task) return;
-
 
 
 
@@ -443,161 +379,119 @@ export default function TasksPage() {
 
 
 
-
-
-
-
-  if (loading) {
-
-
-    return (
-
+  return (
+    <>
       <div
         className="
 px-5
 py-6
+space-y-7
 "
       >
 
-        Loading tasks...
 
-      </div>
 
-    );
+        <TaskHeader
 
+          onAdd={() => setShowTaskModal(true)}
 
-  }
+        />
 
 
 
 
+        <TaskSummary
 
+          myTasks={
+            tasks.filter(
+              (task) =>
+                !task.completed &&
+                task.assignedUsers.some(
+                  (assignedUser) => assignedUser.id === user?.id
+                )
+            ).length
+          }
 
+          total={tasks.length}
 
+          completed={
+            tasks.filter(
+              (task) =>
+                task.completed
+            ).length
+          }
 
+          remaining={
+            tasks.filter(
+              (task) =>
+                !task.completed
+            ).length
+          }
 
+        />
 
-  return (
 
-    <div
 
-      className="
-px-5
-py-6
-space-y-7
-"
 
-    >
+        <TaskFilters
 
+          filters={filters}
 
+          activeFilter={activeFilter}
 
-      <TaskHeader
+          onChange={setActiveFilter}
 
-        onAdd={() => setShowTaskModal(true)}
+        />
 
-      />
 
 
 
 
+        {loading ? (
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <CardSkeleton key={i} />
+            ))}
+          </div>
+        ) : (
+          <TaskList
 
-      <TaskSummary
 
-        myTasks={
-          tasks.filter(
-            (task) =>
-              !task.completed &&
-              task.assignedUsers.some(
-                (assignedUser) => assignedUser.id === user?.id
-              )
-          ).length
-        }
+            tasks={filteredTasks}
 
-        total={tasks.length}
 
-        completed={
-          tasks.filter(
-            (task) =>
-              task.completed
-          ).length
-        }
 
-        remaining={
-          tasks.filter(
-            (task) =>
-              !task.completed
-          ).length
-        }
+            onEditAction={(task) => {
 
-      />
+              setEditingTask(task);
 
+              setShowTaskModal(true);
 
+            }}
 
 
 
-      <TaskFilters
+            onDeleteAction={deleteTask}
 
-        filters={filters}
 
-        activeFilter={activeFilter}
 
-        onChange={setActiveFilter}
+            onToggleAction={toggleTask}
 
-      />
 
 
+          />
+        )}
 
 
 
 
 
-      <TaskList
 
-
-        tasks={filteredTasks}
-
-
-
-        onEditAction={(task) => {
-
-          setEditingTask(task);
-
-          setShowTaskModal(true);
-
-        }}
-
-
-
-
-        onDeleteAction={deleteTask}
-
-
-
-        onToggleAction={toggleTask}
-
-
-
-      />
-
-
-
-
-
-
-
-
-
-
-      {
-        showTaskModal &&
-
-        (
-
+        {showTaskModal && (
           <TaskModal
 
 
             task={editingTask}
-
 
 
             onCloseAction={() => {
@@ -610,28 +504,18 @@ space-y-7
 
 
 
-
             onSaveAction={saveTask}
 
 
 
           />
 
-        )
-
-      }
+        )}
 
 
 
 
-
-
-
-      {
-        showDeleteModal &&
-
-        (
-
+        {showDeleteModal && (
           <DeleteTakModal
 
 
@@ -650,18 +534,11 @@ space-y-7
 
 
           />
+        )}
 
-        )
+      </div>
 
-      }
-
-
-
-
-
-    </div>
-
+      <LoadingOverlay isLoading={loading} message="Loading tasks..." />
+    </>
   );
-
-
 }

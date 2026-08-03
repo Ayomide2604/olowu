@@ -104,3 +104,15 @@ export async function deleteEvent(id: string) {
 		throw error;
 	}
 }
+
+export async function getEventsCount() {
+	const { data, error, count } = await supabase
+		.from("events")
+		.select("*", { count: "exact", head: true });
+
+	if (error) {
+		throw error;
+	}
+
+	return count || 0;
+}
