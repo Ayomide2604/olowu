@@ -6,7 +6,7 @@ import {
   CheckSquare,
   ShoppingCart,
   CalendarDays,
-  Users,
+  Menu,
 } from "lucide-react";
 
 const items = [
@@ -25,15 +25,15 @@ const items = [
     href: "/shopping",
     icon: ShoppingCart,
   },
+    {
+      label: "Events",
+      href: "/events",
+      icon: CalendarDays,
+    },
   {
-    label: "Calendar",
-    href: "/calendar",
-    icon: CalendarDays,
-  },
-  {
-    label: "Family",
-    href: "/family",
-    icon: Users,
+    label: "More",
+    href: "/more",
+    icon: Menu,
   },
 ];
 
