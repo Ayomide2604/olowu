@@ -17,21 +17,6 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="bg-gray-50">
-        <Header />
-
-        <main
-          className="
-          min-h-screen
-          pb-20
-        "
-        >
-          <AuthProvider>{children}</AuthProvider>
-        </main>
-
-        <BottomNav />
-      </body>
-    </html>
+    <AuthProvider>{children}</AuthProvider>
   );
 }
