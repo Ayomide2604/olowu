@@ -14,6 +14,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <AuthProvider>{children}</AuthProvider>
+    <html lang="en">
+      <body className="bg-gray-50">
+
+
+
+        <AuthProvider>{children}</AuthProvider>
+
+
+      </body>
+    </html>
   );
 }

@@ -1,14 +1,20 @@
 "use client";
 
-
 import {
-    useState
+    useEffect,
+    useState,
 } from "react";
 
 
 import {
     useAuth
 } from "@/context/AuthProvider";
+
+
+import {
+    getProfile,
+    updateProfile
+} from "@/lib/supabase/profile";
 
 
 import ProfileHeader from "@/components/profile/ProfileHeader";
@@ -30,16 +36,154 @@ export default function ProfilePage() {
 
 
 
+
     const [
         firstName,
         setFirstName
-    ] = useState("Ayomide");
+    ] = useState("");
+
 
 
     const [
         lastName,
         setLastName
-    ] = useState("Olowu");
+    ] = useState("");
+
+
+
+    const [
+        avatarUrl,
+        setAvatarUrl
+    ] = useState<string | undefined>();
+
+
+    const [
+        loading,
+        setLoading
+    ] = useState(true);
+
+
+
+
+
+    useEffect(() => {
+
+
+        if (user) {
+
+            loadProfile();
+
+        }
+
+
+    }, [user]);
+
+
+
+
+
+
+
+    async function loadProfile() {
+
+
+        if (!user) return;
+
+
+
+        const profile =
+            await getProfile(user.id);
+
+
+
+        if (profile) {
+
+
+            setFirstName(
+                profile.first_name ?? ""
+            );
+
+
+            setLastName(
+                profile.last_name ?? ""
+            );
+
+
+            setAvatarUrl(
+                profile.avatar_url
+            );
+
+
+        }
+
+
+        setLoading(false);
+
+
+    }
+
+
+
+
+
+
+    async function saveProfile() {
+
+
+        if (!user) return;
+
+
+
+        await updateProfile(
+
+            user.id,
+
+            {
+
+                first_name: firstName,
+
+                last_name: lastName,
+
+                avatar_url: avatarUrl,
+
+            }
+
+        );
+
+
+    }
+
+
+
+
+
+
+
+    if (loading) {
+
+
+        return (
+
+            <div
+                className="
+        min-h-screen
+        flex
+        items-center
+        justify-center
+        "
+            >
+
+                Loading...
+
+            </div>
+
+        );
+
+
+    }
+
+
+
 
 
 
@@ -50,12 +194,13 @@ export default function ProfilePage() {
         <div
 
             className="
-px-5
-py-6
-space-y-7
-"
+      px-5
+      py-6
+      space-y-7
+      "
 
         >
+
 
 
             <ProfileHeader />
@@ -63,16 +208,22 @@ space-y-7
 
 
 
+
+
+
             <GlassCard className="p-6">
+
 
                 <div
                     className="
-flex
-justify-center
-"
+          flex
+          justify-center
+          "
                 >
 
-                    <ProfileAvatar />
+                    <ProfileAvatar
+                        image={avatarUrl}
+                    />
 
 
                 </div>
@@ -85,27 +236,40 @@ justify-center
 
 
 
+
             <GlassCard className="p-6">
 
 
                 <ProfileForm
 
+
                     firstName={firstName}
 
+
                     lastName={lastName}
+
 
                     email={
                         user?.email ?? ""
                     }
 
+
                     setFirstName={setFirstName}
 
+
                     setLastName={setLastName}
+
+
+
+                    onSave={saveProfile}
+
 
                 />
 
 
+
             </GlassCard>
+
 
 
 

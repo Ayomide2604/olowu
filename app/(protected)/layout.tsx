@@ -9,22 +9,20 @@ export default function ProtectedLayout({
 }) {
   return (
 
-    <html lang="en">
-      <body className="bg-gray-50">
-        <Header />
+    <div className="bg-gray-50">
+      <Header />
 
-        <main
-          className="
+      <main
+        className="
             min-h-screen
             pb-20
           "
-        >
-          <ProtectedRoute>{children}</ProtectedRoute>
-        </main>
+      >
+        <ProtectedRoute>{children}</ProtectedRoute>
+      </main>
 
-        <BottomNav />
-      </body>
-    </html>
+      <BottomNav />
+    </div>
   )
 
 }
