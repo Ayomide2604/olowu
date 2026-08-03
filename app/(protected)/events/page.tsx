@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import EventHeader from "@/components/events/EventHeader";
 import EventList, { Event } from "@/components/events/EventList";
 import EventModal from "@/components/events/EventModal";
+import EventFilters from "@/components/events/EventFilters";
 import ConfirmModal from "@/components/ui/ConfirmModal";
 
 import { useAuth } from "@/context/AuthProvider";
@@ -15,6 +16,13 @@ import {
   updateEvent,
   deleteEvent as removeEvent,
 } from "@/lib/supabase/events";
+
+const filters = [
+  "All events",
+  "Today",
+  "Upcoming",
+  "Past events",
+];
 
 export default function EventsPage() {
   const { user } = useAuth();
@@ -30,6 +38,9 @@ export default function EventsPage() {
 
   const [eventToDelete, setEventToDelete] =
     useState<string | null>(null);
+
+  const [activeFilter, setActiveFilter] =
+    useState("All events");
 
   useEffect(() => {
     loadEvents();
@@ -108,6 +119,34 @@ export default function EventsPage() {
     }
   }
 
+  const filteredEvents = events.filter((event) => {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const [year, month, day] = event.date.split("-").map(Number);
+    const eventDate = new Date(year, month - 1, day);
+
+    switch (activeFilter) {
+      case "All events":
+        return true;
+
+      case "Today":
+        return (
+          eventDate.getFullYear() === today.getFullYear() &&
+          eventDate.getMonth() === today.getMonth() &&
+          eventDate.getDate() === today.getDate()
+        );
+
+      case "Upcoming":
+        return eventDate > today;
+
+      case "Past events":
+        return eventDate < today;
+
+      default:
+        return true;
+    }
+  });
+
   if (loading) {
     return (
       <div className="px-5 py-6">
@@ -128,8 +167,14 @@ export default function EventsPage() {
         onAdd={() => setShowModal(true)}
       />
 
+      <EventFilters
+        filters={filters}
+        activeFilter={activeFilter}
+        onChange={setActiveFilter}
+      />
+
       <EventList
-        events={[...events].sort((a, b) => {
+        events={[...filteredEvents].sort((a, b) => {
           const first = new Date(`${a.date}T${a.time}`);
 
           const second = new Date(`${b.date}T${b.time}`);

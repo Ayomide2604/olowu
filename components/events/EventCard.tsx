@@ -14,6 +14,35 @@ import {
 import GlassCard from "@/components/ui/GlassCard";
 import Avatar from "@/components/ui/Avatar";
 
+function humanizeDate(dateStr: string): string {
+  const [year, month, day] = dateStr.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+  const now = new Date();
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const diffTime = date.getTime() - today.getTime();
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays === 0) return "Today";
+  if (diffDays === 1) return "Tomorrow";
+  if (diffDays === -1) return "Yesterday";
+  if (diffDays < -1) return `${Math.abs(diffDays)} days ago`;
+  if (diffDays <= 7) return `in ${diffDays} days`;
+
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
+
+function formatTime(timeStr: string): string {
+  const [hours, minutes] = timeStr.split(":");
+  const hour = parseInt(hours, 10);
+  const ampm = hour >= 12 ? "PM" : "AM";
+  const hour12 = hour % 12 || 12;
+  return `${hour12}:${minutes} ${ampm}`;
+}
+
 type Props = {
   title: string;
 
@@ -111,7 +140,7 @@ export default function EventCard({
               >
                 <CalendarDays size={15} />
 
-                {date}
+                {humanizeDate(date)}
               </p>
 
               <p
@@ -123,7 +152,7 @@ export default function EventCard({
               >
                 <Clock size={15} />
 
-                {time}
+                {formatTime(time)}
               </p>
 
               <p
