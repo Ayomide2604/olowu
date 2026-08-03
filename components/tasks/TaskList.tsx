@@ -1,5 +1,5 @@
 import TaskCard from "./TaskCard";
-import { Task } from "@/app/tasks/page";
+import { Task } from "@/app/(protected)/tasks/page";
 
 type Props = {
   tasks: Task[];
