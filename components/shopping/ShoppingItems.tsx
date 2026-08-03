@@ -20,7 +20,7 @@ export default function ShoppingItems({
 space-y-4
 "
     >
-      {items.map((item) => (
+      {items.map((item, index) => (
         <ShoppingItemCard
           key={item.id}
           id={item.id}
@@ -30,6 +30,7 @@ space-y-4
           onToggle={() => onToggle(item.id)}
           onEdit={() => onEdit(item)}
           onDelete={() => onDelete(item.id)}
+          index={index}
         />
       ))}
     </section>

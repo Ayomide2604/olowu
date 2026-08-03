@@ -7,27 +7,18 @@ import { useRouter } from "next/navigation";
 import GlassCard from "@/components/ui/GlassCard";
 
 type Props = {
-  id: number;
-
+  id: string;
   title: string;
-
-  icon: string;
-
   items: number;
-
   remaining: number;
-
   updated: string;
-
   onEdit: () => void;
-
   onDelete: () => void;
 };
 
 export default function ShoppingListCard({
   id,
   title,
-  icon,
   items,
   remaining,
   updated,

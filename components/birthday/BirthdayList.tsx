@@ -1,6 +1,15 @@
 import BirthdayCard from "./BirthdayCard";
 
-import type { Birthday } from "./BirthdayList";
+
+export type Birthday = {
+  id: number;
+  name: string;
+  date: string;
+  relationship: string;
+  notes?: string;
+  createdAt: Date;
+};
+
 
 type Props = {
   birthdays: Birthday[];

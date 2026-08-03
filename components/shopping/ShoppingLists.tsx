@@ -1,5 +1,5 @@
 import ShoppingListCard from "./ShoppingListCard";
-import { ShoppingList } from "@/app/shopping/page";
+import { ShoppingList } from "@/app/(protected)/shopping/page";
 
 type Props = {
   lists: ShoppingList[];

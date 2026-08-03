@@ -6,8 +6,8 @@ type Props = {
 
   onEditAction: (task: Task) => void;
 
-  onDeleteAction: (id: number) => void;
-  onToggleAction: (id: number) => void;
+  onDeleteAction: (id: string) => void;
+  onToggleAction: (id: string) => void;
 };
 
 export default function TaskList({ tasks, onEditAction, onDeleteAction, onToggleAction }: Props) {
@@ -17,7 +17,7 @@ export default function TaskList({ tasks, onEditAction, onDeleteAction, onToggle
 space-y-4
 "
     >
-      {tasks.map((task) => (
+      {tasks.map((task, index) => (
         <TaskCard
           key={task.id}
           task={task.task}
@@ -28,6 +28,7 @@ space-y-4
           onToggleAction={() => onToggleAction(task.id)}
           onEditAction={() => onEditAction(task)}
           onDeleteAction={() => onDeleteAction(task.id)}
+          index={index}
         />
       ))}
     </div>

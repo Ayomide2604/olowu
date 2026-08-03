@@ -1,12 +1,19 @@
 "use client";
 
 import { useState } from "react";
-
-import { CalendarDays, MoreVertical, Pencil, Trash2, Cake } from "lucide-react";
+import {
+  CalendarDays,
+  MoreVertical,
+  Pencil,
+  Trash2,
+  Cake,
+} from "lucide-react";
 
 import GlassCard from "@/components/ui/GlassCard";
 
+
 type Props = {
+
   name: string;
 
   date: string;
@@ -16,18 +23,32 @@ type Props = {
   onEdit: () => void;
 
   onDelete: () => void;
+
 };
 
+
+
 export default function BirthdayCard({
+
   name,
+
   date,
+
   turning,
+
   onEdit,
+
   onDelete,
+
 }: Props) {
+
+
   const [showMenu, setShowMenu] = useState(false);
 
+
+
   return (
+
     <GlassCard
       className={`
       p-4
@@ -35,20 +56,14 @@ export default function BirthdayCard({
       ${showMenu ? "z-50" : ""}
       `}
     >
-      <div
-        className="
-        flex
-        items-center
-        justify-between
-        "
-      >
-        <div
-          className="
-          flex
-          items-center
-          gap-3
-          "
-        >
+
+
+      <div className="flex items-center justify-between">
+
+
+        <div className="flex items-center gap-3">
+
+
           <div
             className="
             w-11
@@ -61,17 +76,21 @@ export default function BirthdayCard({
             justify-center
             "
           >
+
             <Cake size={22} />
+
           </div>
 
+
+
           <div>
-            <h3
-              className="
-              font-semibold
-              "
-            >
+
+            <h3 className="font-semibold">
+
               {name}
+
             </h3>
+
 
             <div
               className="
@@ -83,10 +102,14 @@ export default function BirthdayCard({
               mt-1
               "
             >
+
               <CalendarDays size={15} />
 
               {date}
+
             </div>
+
+
 
             <p
               className="
@@ -96,18 +119,30 @@ export default function BirthdayCard({
               mt-1
               "
             >
+
               Turning {turning}
+
             </p>
+
+
           </div>
+
+
         </div>
 
-        <div
-          className="
-          relative
-          "
-        >
+
+
+
+
+        <div className="relative">
+
+
           <button
-            onClick={() => setShowMenu(!showMenu)}
+
+            onClick={() =>
+              setShowMenu(!showMenu)
+            }
+
             className="
             w-9
             h-9
@@ -117,13 +152,22 @@ export default function BirthdayCard({
             justify-center
             hover:bg-gray-100
             "
+
           >
+
             <MoreVertical size={20} />
+
           </button>
 
-          {showMenu && (
-            <div
-              className="
+
+
+
+
+          {
+            showMenu && (
+
+              <div
+                className="
                 absolute
                 right-0
                 top-10
@@ -135,13 +179,17 @@ export default function BirthdayCard({
                 p-2
                 z-[100]
                 "
-            >
-              <button
-                onClick={() => {
-                  setShowMenu(false);
-                  onEdit();
-                }}
-                className="
+              >
+
+
+                <button
+
+                  onClick={() => {
+                    setShowMenu(false);
+                    onEdit();
+                  }}
+
+                  className="
                   flex
                   items-center
                   gap-2
@@ -152,17 +200,27 @@ export default function BirthdayCard({
                   hover:bg-gray-100
                   text-sm
                   "
-              >
-                <Pencil size={15} />
-                Edit
-              </button>
 
-              <button
-                onClick={() => {
-                  setShowMenu(false);
-                  onDelete();
-                }}
-                className="
+                >
+
+                  <Pencil size={15} />
+
+                  Edit
+
+                </button>
+
+
+
+
+
+                <button
+
+                  onClick={() => {
+                    setShowMenu(false);
+                    onDelete();
+                  }}
+
+                  className="
                   flex
                   items-center
                   gap-2
@@ -174,14 +232,31 @@ export default function BirthdayCard({
                   text-red-500
                   text-sm
                   "
-              >
-                <Trash2 size={15} />
-                Delete
-              </button>
-            </div>
-          )}
+
+                >
+
+                  <Trash2 size={15} />
+
+                  Delete
+
+                </button>
+
+
+
+              </div>
+
+            )
+          }
+
+
         </div>
+
+
       </div>
+
+
     </GlassCard>
+
   );
+
 }

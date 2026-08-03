@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 
 import { X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 import {
   getProfiles,
@@ -85,34 +86,48 @@ export default function TaskModal({
   }
 
   return (
-    <div
-      className="
-      fixed
-      inset-0
-      bg-black/40
-      flex
-      items-center
-      justify-center
-      px-5
-      z-50
-      "
-    >
-      <div
+    <AnimatePresence>
+      <motion.div
         className="
-        bg-white
-        w-full
-        max-w-md
-        rounded-3xl
-        p-6
-        shadow-xl
-        relative
-        max-h-[90vh]
-        overflow-y-auto
+        fixed
+        inset-0
+        bg-black/40
+        flex
+        items-center
+        justify-center
+        px-5
+        z-50
+        backdrop-blur-sm
         "
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
       >
-        <button
-          onClick={onCloseAction}
+        <motion.div
           className="
+          bg-white
+          w-full
+          max-w-md
+          rounded-3xl
+          p-6
+          shadow-xl
+          relative
+          max-h-[90vh]
+          overflow-y-auto
+          "
+          initial={{ scale: 0.9, y: 20, opacity: 0 }}
+          animate={{ scale: 1, y: 0, opacity: 1 }}
+          exit={{ scale: 0.9, y: 20, opacity: 0 }}
+          transition={{
+            type: "spring",
+            stiffness: 300,
+            damping: 25,
+          }}
+        >
+          <motion.button
+            onClick={onCloseAction}
+            className="
           absolute
           right-5
           top-5
@@ -124,42 +139,49 @@ export default function TaskModal({
           justify-center
           hover:bg-gray-100
           "
-        >
-          <X size={20} />
-        </button>
+            whileTap={{ scale: 0.9 }}
+            whileHover={{ scale: 1.1 }}
+            transition={{
+              type: "spring",
+              stiffness: 400,
+              damping: 17,
+            }}
+          >
+            <X size={20} />
+          </motion.button>
 
-        <h2
-          className="
+          <h2
+            className="
           text-xl
           font-bold
           "
-        >
-          {task ? "Edit Task" : "Create Task"}
-        </h2>
+          >
+            {task ? "Edit Task" : "Create Task"}
+          </h2>
 
-        <p
-          className="
+          <p
+            className="
           text-sm
           text-gray-500
           mt-1
           "
-        >
-          {task ? "Update task details" : "Add a new task for your family"}
-        </p>
+          >
+            {task ? "Update task details" : "Add a new task for your family"}
+          </p>
 
-        <div
-          className="
+          <div
+            className="
           mt-6
           space-y-4
           "
-        >
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Task</label>
-            <input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="What needs to be done?"
-              className="
+          >
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Task</label>
+              <input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="What needs to be done?"
+                className="
               w-full
               px-4
               py-3
@@ -171,16 +193,16 @@ export default function TaskModal({
               app-input
               appearance-none
               "
-            />
-          </div>
+              />
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
-            <input
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              className="
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                className="
               w-full
               px-4
               py-3
@@ -189,16 +211,16 @@ export default function TaskModal({
               app-input
               appearance-none
               "
-            />
-          </div>
+              />
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Due Time</label>
-            <input
-              type="time"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-              className="
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Due Time</label>
+              <input
+                type="time"
+                value={time}
+                onChange={(e) => setTime(e.target.value)}
+                className="
               w-full
               px-4
               py-3
@@ -207,20 +229,20 @@ export default function TaskModal({
               app-input
               appearance-none
               "
-            />
-          </div>
+              />
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Assign to</label>
-            {loading ? (
-              <div className="text-sm text-gray-500">Loading family members...</div>
-            ) : (
-              <div className="space-y-2">
-                {profiles.map((profile) => (
-                  <button
-                    key={profile.id}
-                    onClick={() => toggleUser(profile.id)}
-                    className={`
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Assign to</label>
+              {loading ? (
+                <div className="text-sm text-gray-500">Loading family members...</div>
+              ) : (
+                <div className="space-y-2">
+                  {profiles.map((profile) => (
+                    <motion.button
+                      key={profile.id}
+                      onClick={() => toggleUser(profile.id)}
+                      className={`
                       w-full
                       flex
                       items-center
@@ -231,13 +253,20 @@ export default function TaskModal({
                       border
                       transition-colors
                       ${assignedUsers.includes(profile.id)
-                        ? "bg-purple-50 border-purple-200"
-                        : "bg-white border-gray-200 hover:bg-gray-50"
-                      }
+                          ? "bg-purple-50 border-purple-200"
+                          : "bg-white border-gray-200 hover:bg-gray-50"
+                        }
                     `}
-                  >
-                    <div
-                      className="
+                      whileTap={{ scale: 0.98 }}
+                      whileHover={{ scale: 1.01 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 17,
+                      }}
+                    >
+                      <div
+                        className="
                       w-8
                       h-8
                       rounded-full
@@ -253,23 +282,23 @@ export default function TaskModal({
                       border-2
                       border-white
                       "
-                    >
-                      {profile.avatar_url ? (
-                        <img
-                          src={profile.avatar_url}
-                          alt={`${profile.first_name} ${profile.last_name}`}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <span>{profile.first_name?.charAt(0) || "U"}</span>
-                      )}
-                    </div>
-                    <span className="text-sm font-medium">
-                      {profile.first_name} {profile.last_name}
-                    </span>
-                    {assignedUsers.includes(profile.id) && (
-                      <div
-                        className="
+                      >
+                        {profile.avatar_url ? (
+                          <img
+                            src={profile.avatar_url}
+                            alt={`${profile.first_name} ${profile.last_name}`}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <span>{profile.first_name?.charAt(0) || "U"}</span>
+                        )}
+                      </div>
+                      <span className="text-sm font-medium">
+                        {profile.first_name} {profile.last_name}
+                      </span>
+                      {assignedUsers.includes(profile.id) && (
+                        <div
+                          className="
                         ml-auto
                         w-5
                         h-5
@@ -279,20 +308,20 @@ export default function TaskModal({
                         items-center
                         justify-center
                         "
-                      >
-                        <div className="w-2 h-2 rounded-full bg-white" />
-                      </div>
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+                        >
+                          <div className="w-2 h-2 rounded-full bg-white" />
+                        </div>
+                      )}
+                    </motion.button>
+                  ))}
+                </div>
+              )}
+            </div>
 
-          <button
-            onClick={handleSave}
-            disabled={!title || !date || !time}
-            className="
+            <motion.button
+              onClick={handleSave}
+              disabled={!title || !date || !time}
+              className="
             w-full
             py-3
             rounded-2xl
@@ -301,23 +330,38 @@ export default function TaskModal({
             font-medium
             disabled:opacity-40
             "
-          >
-            {task ? "Save Changes" : "Create Task"}
-          </button>
+              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
+              transition={{
+                type: "spring",
+                stiffness: 400,
+                damping: 17,
+              }}
+            >
+              {task ? "Save Changes" : "Create Task"}
+            </motion.button>
 
-          <button
-            onClick={onCloseAction}
-            className="
+            <motion.button
+              onClick={onCloseAction}
+              className="
             w-full
             py-3
             rounded-2xl
             bg-gray-100
             "
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    </div>
+              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
+              transition={{
+                type: "spring",
+                stiffness: 400,
+                damping: 17,
+              }}
+            >
+              Cancel
+            </motion.button>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 }

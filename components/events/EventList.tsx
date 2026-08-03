@@ -49,7 +49,7 @@ export default function EventList({
     >
 
       {
-        events.map((event) => (
+        events.map((event, index) => (
 
           <EventCard
 
@@ -74,6 +74,8 @@ export default function EventList({
             onDelete={() =>
               onDelete(event.id)
             }
+
+            index={index}
 
           />
 

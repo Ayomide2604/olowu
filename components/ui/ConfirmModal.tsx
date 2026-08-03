@@ -1,5 +1,7 @@
 "use client";
 
+import { motion, AnimatePresence } from "framer-motion";
+
 type Props = {
   title: string;
   message: string;
@@ -18,80 +20,109 @@ export default function ConfirmModal({
   onCancel,
 }: Props) {
   return (
-    <div
-      className="
-      fixed
-      inset-0
-      bg-black/40
-      flex
-      items-center
-      justify-center
-      px-5
-      z-50
-      "
-    >
-      <div
+    <AnimatePresence>
+      <motion.div
         className="
-        bg-white
-        w-full
-        max-w-sm
-        rounded-3xl
-        p-6
-        shadow-xl
+        fixed
+        inset-0
+        bg-black/40
+        flex
+        items-center
+        justify-center
+        px-5
+        z-50
+        backdrop-blur-sm
         "
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
       >
-        <h2
+        <motion.div
           className="
-          text-xl
-          font-bold
+          bg-white
+          w-full
+          max-w-sm
+          rounded-3xl
+          p-6
+          shadow-xl
           "
+          initial={{ scale: 0.9, y: 20, opacity: 0 }}
+          animate={{ scale: 1, y: 0, opacity: 1 }}
+          exit={{ scale: 0.9, y: 20, opacity: 0 }}
+          transition={{
+            type: "spring",
+            stiffness: 300,
+            damping: 25,
+          }}
         >
-          {title}
-        </h2>
-
-        <p
-          className="
-          text-sm
-          text-gray-500
-          mt-2
-          "
-        >
-          {message}
-        </p>
-
-        <div
-          className="
-          mt-6
-          space-y-3
-          "
-        >
-          <button
-            onClick={onConfirm}
+          <h2
             className="
-            w-full
-            py-3
-            rounded-2xl
-            bg-red-600
-            text-white
-            font-medium
+            text-xl
+            font-bold
             "
           >
-            {confirmText}
-          </button>
+            {title}
+          </h2>
 
-          <button
-            onClick={onCancel}
+          <p
             className="
-            w-full
-            py-3
-            rounded-2xl
-            bg-gray-100
+            text-sm
+            text-gray-500
+            mt-2
             "
           >
-            {cancelText}
-          </button>
-        </div>
-      </div>
-    </div>
+            {message}
+          </p>
+
+          <div
+            className="
+            mt-6
+            space-y-3
+            "
+          >
+            <motion.button
+              onClick={onConfirm}
+              className="
+              w-full
+              py-3
+              rounded-2xl
+              bg-red-600
+              text-white
+              font-medium
+              "
+              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
+              transition={{
+                type: "spring",
+                stiffness: 400,
+                damping: 17,
+              }}
+            >
+              {confirmText}
+            </motion.button>
+
+            <motion.button
+              onClick={onCancel}
+              className="
+              w-full
+              py-3
+              rounded-2xl
+              bg-gray-100
+              "
+              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
+              transition={{
+                type: "spring",
+                stiffness: 400,
+                damping: 17,
+              }}
+            >
+              {cancelText}
+            </motion.button>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 }

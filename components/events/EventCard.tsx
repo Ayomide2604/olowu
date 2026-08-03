@@ -10,6 +10,7 @@ import {
   Pencil,
   Trash2,
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 import GlassCard from "@/components/ui/GlassCard";
 import Avatar from "@/components/ui/Avatar";
@@ -59,6 +60,8 @@ type Props = {
   onEdit: () => void;
 
   onDelete: () => void;
+
+  index?: number;
 };
 
 export default function EventCard({
@@ -71,6 +74,7 @@ export default function EventCard({
 
   onEdit,
   onDelete,
+  index = 0,
 }: Props) {
   const [showMenu, setShowMenu] = useState(false);
 
@@ -80,27 +84,39 @@ export default function EventCard({
     .join("");
 
   return (
-    <GlassCard
-      className={`
-      p-5
-      relative
-      ${showMenu ? "z-50" : ""}
-      `}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileTap={{ scale: 0.98 }}
+      whileHover={{ scale: 1.01 }}
+      transition={{
+        type: "spring",
+        stiffness: 400,
+        damping: 17,
+        delay: index * 0.05,
+      }}
     >
-      <div
-        className="
-        flex
-        justify-between
-        "
+      <GlassCard
+        className={`
+        p-5
+        relative
+        ${showMenu ? "z-50" : ""}
+        `}
       >
         <div
           className="
-          flex
-          gap-3
-          "
+        flex
+        justify-between
+        "
         >
           <div
             className="
+          flex
+          gap-3
+          "
+          >
+            <div
+              className="
             w-11
             h-11
             rounded-2xl
@@ -110,76 +126,76 @@ export default function EventCard({
             items-center
             justify-center
             "
-          >
-            <CalendarDays size={22} />
-          </div>
+            >
+              <CalendarDays size={22} />
+            </div>
 
-          <div>
-            <h3
-              className="
+            <div>
+              <h3
+                className="
               font-semibold
               "
-            >
-              {title}
-            </h3>
+              >
+                {title}
+              </h3>
 
-            <div
-              className="
+              <div
+                className="
               mt-2
               space-y-1
               text-sm
               text-gray-500
               "
-            >
-              <p
-                className="
+              >
+                <p
+                  className="
                 flex
                 items-center
                 gap-2
                 "
-              >
-                <CalendarDays size={15} />
+                >
+                  <CalendarDays size={15} />
 
-                {humanizeDate(date)}
-              </p>
+                  {humanizeDate(date)}
+                </p>
 
-              <p
-                className="
+                <p
+                  className="
                 flex
                 items-center
                 gap-2
                 "
-              >
-                <Clock size={15} />
+                >
+                  <Clock size={15} />
 
-                {formatTime(time)}
-              </p>
+                  {formatTime(time)}
+                </p>
 
-              <p
-                className="
+                <p
+                  className="
                 flex
                 items-center
                 gap-2
                 "
-              >
-                <MapPin size={15} />
+                >
+                  <MapPin size={15} />
 
-                {location}
-              </p>
+                  {location}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div
-          className="
+          <div
+            className="
           flex
           items-start
           gap-2
           relative
           "
-        >
-          <div
-            className="
+          >
+            <div
+              className="
             w-10
             h-10
             rounded-full
@@ -195,21 +211,21 @@ export default function EventCard({
             border-2
             border-white
             "
-          >
-            {avatarUrl ? (
-              <img
-                src={avatarUrl}
-                alt={createdBy}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <span>{initials}</span>
-            )}
-          </div>
+            >
+              {avatarUrl ? (
+                <img
+                  src={avatarUrl}
+                  alt={createdBy}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span>{initials}</span>
+              )}
+            </div>
 
-          <button
-            onClick={() => setShowMenu(!showMenu)}
-            className="
+            <motion.button
+              onClick={() => setShowMenu(!showMenu)}
+              className="
             w-9
             h-9
             rounded-full
@@ -218,13 +234,21 @@ export default function EventCard({
             justify-center
             hover:bg-gray-100
             "
-          >
-            <MoreVertical size={20} />
-          </button>
+              whileTap={{ scale: 0.9 }}
+              whileHover={{ scale: 1.1 }}
+              transition={{
+                type: "spring",
+                stiffness: 400,
+                damping: 17,
+              }}
+            >
+              <MoreVertical size={20} />
+            </motion.button>
 
-          {showMenu && (
-            <div
-              className="
+            <AnimatePresence>
+              {showMenu && (
+                <motion.div
+                  className="
                 absolute
                 right-0
                 top-10
@@ -236,13 +260,21 @@ export default function EventCard({
                 p-2
                 z-[100]
                 "
-            >
-              <button
-                onClick={() => {
-                  setShowMenu(false);
-                  onEdit();
-                }}
-                className="
+                  initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 300,
+                    damping: 25,
+                  }}
+                >
+                  <motion.button
+                    onClick={() => {
+                      setShowMenu(false);
+                      onEdit();
+                    }}
+                    className="
                   flex
                   gap-2
                   items-center
@@ -253,17 +285,24 @@ export default function EventCard({
                   hover:bg-gray-100
                   text-sm
                   "
-              >
-                <Pencil size={15} />
-                Edit
-              </button>
+                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ scale: 1.02 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 400,
+                      damping: 17,
+                    }}
+                  >
+                    <Pencil size={15} />
+                    Edit
+                  </motion.button>
 
-              <button
-                onClick={() => {
-                  setShowMenu(false);
-                  onDelete();
-                }}
-                className="
+                  <motion.button
+                    onClick={() => {
+                      setShowMenu(false);
+                      onDelete();
+                    }}
+                    className="
                   flex
                   gap-2
                   items-center
@@ -275,14 +314,23 @@ export default function EventCard({
                   text-red-500
                   text-sm
                   "
-              >
-                <Trash2 size={15} />
-                Delete
-              </button>
-            </div>
-          )}
+                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ scale: 1.02 }}
+                    transition={{
+                      type: "spring",
+                      stiffness: 400,
+                      damping: 17,
+                    }}
+                  >
+                    <Trash2 size={15} />
+                    Delete
+                  </motion.button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
-      </div>
-    </GlassCard>
+      </GlassCard>
+    </motion.div>
   );
 }

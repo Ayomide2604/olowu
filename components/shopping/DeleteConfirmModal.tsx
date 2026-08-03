@@ -1,81 +1,117 @@
+"use client";
+
+import { X } from "lucide-react";
+
 type Props = {
+  listName: string;
+
   onClose: () => void;
 
   onDelete: () => void;
 };
 
-export default function DeleteConfirmModal({ onClose, onDelete }: Props) {
+export default function DeleteConfirmModal({
+  listName,
+  onClose,
+  onDelete,
+}: Props) {
   return (
     <div
       className="
-fixed
-inset-0
-bg-black/30
-flex
-items-center
-justify-center
-px-5
-"
+      fixed
+      inset-0
+      bg-black/40
+      flex
+      items-center
+      justify-center
+      px-5
+      z-50
+      "
     >
       <div
         className="
-bg-white
-rounded-3xl
-p-6
-max-w-sm
-w-full
-"
+        bg-white
+        rounded-3xl
+        p-6
+        w-full
+        max-w-md
+        relative
+        shadow-xl
+        "
       >
+        <button
+          onClick={onClose}
+          className="
+          absolute
+          right-5
+          top-5
+          "
+        >
+          <X size={20} />
+        </button>
+
+
         <h2
           className="
-font-bold
-text-lg
-"
+          text-xl
+          font-bold
+          "
         >
           Delete Shopping List?
         </h2>
 
+
         <p
           className="
-text-gray-500
-mt-2
-"
+          mt-3
+          text-gray-500
+          "
         >
-          All items inside this list will be removed.
+          Are you sure you want to delete{" "}
+          <span className="font-semibold text-gray-700">
+            {listName}
+          </span>
+          ?
         </p>
+
 
         <div
           className="
-flex
-gap-3
-mt-6
-"
+          mt-6
+          space-y-3
+          "
         >
-          <button
-            onClick={onClose}
-            className="
-flex-1
-py-3
-rounded-xl
-bg-gray-100
-"
-          >
-            Cancel
-          </button>
 
           <button
             onClick={onDelete}
             className="
-flex-1
-py-3
-rounded-xl
-bg-red-500
-text-white
-"
+            w-full
+            bg-red-500
+            text-white
+            py-3
+            rounded-2xl
+            font-medium
+            "
           >
             Delete
           </button>
+
+
+          <button
+            onClick={onClose}
+            className="
+            w-full
+            bg-gray-100
+            py-3
+            rounded-2xl
+            font-medium
+            "
+          >
+            Cancel
+          </button>
+
         </div>
+
       </div>
     </div>
   );
