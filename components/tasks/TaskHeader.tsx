@@ -1,33 +1,55 @@
-export default function TaskHeader() {
+import { Plus } from "lucide-react";
+
+type Props = {
+  onAdd: () => void;
+};
+
+export default function TaskHeader({ onAdd }: Props) {
   return (
-    <section>
-      <p
-        className="
+    <div
+      className="
+flex
+items-center
+justify-between
+"
+    >
+      <div>
+        <h1
+          className="
+text-2xl
+font-bold
+"
+        >
+          Tasks
+        </h1>
+
+        <p
+          className="
 text-sm
 text-gray-500
 "
-      >
-        Family Tasks
-      </p>
+        >
+          Manage family tasks
+        </p>
+      </div>
 
-      <h1
+      <button
+        onClick={onAdd}
         className="
-text-3xl
-font-bold
-mt-1
+flex
+items-center
+gap-2
+rounded-2xl
+bg-purple-600
+px-4
+py-3
+text-white
+font-medium
 "
       >
-        Tasks
-      </h1>
-
-      <p
-        className="
-text-gray-500
-mt-2
-"
-      >
-        Stay organized together.
-      </p>
-    </section>
+        <Plus size={18} />
+        Add Task
+      </button>
+    </div>
   );
 }

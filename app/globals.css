@@ -192,3 +192,26 @@ p {
     var(--text-secondary);
 
 }
+
+
+
+@layer components {
+
+  .app-input {
+    @apply
+    mt-2
+    block
+    w-full
+    h-12
+    rounded-2xl
+    border
+    border-gray-200
+    px-4
+    text-sm
+    outline-none
+    transition
+    focus:ring-2
+    focus:ring-purple-500;
+  }
+
+}
