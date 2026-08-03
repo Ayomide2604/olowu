@@ -4,107 +4,121 @@ import { useState } from "react";
 
 import { useRouter } from "next/navigation";
 
-import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/lib/supabase/client";
 
 export default function LoginPage() {
-  const { login } = useAuth();
+	const router = useRouter();
 
-  const router = useRouter();
+	const [email, setEmail] = useState("");
 
-  const [username, setUsername] = useState("");
+	const [password, setPassword] = useState("");
 
-  const [password, setPassword] = useState("");
+	const [error, setError] = useState("");
 
-  const [error, setError] = useState("");
+	const [loading, setLoading] = useState(false);
 
-  function handleLogin() {
-    const success = login(username, password);
+	async function handleLogin() {
+		setError("");
 
-    if (success) {
-      router.replace("/home");
-    } else {
-      setError("Invalid username or password");
-    }
-  }
+		setLoading(true);
 
-  return (
-    <div
-      className="
-min-h-screen
-flex
-items-center
-justify-center
-px-5
-"
-    >
-      <div
-        className="
-w-full
-max-w-md
-space-y-6
-"
-      >
-        <h1
-          className="
-text-3xl
-font-bold
-"
-        >
-          Welcome back
-        </h1>
+		const { error } = await supabase.auth.signInWithPassword({
+			email,
 
-        <input
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className="
-w-full
-px-4
-py-3
-rounded-2xl
-border
-"
-        />
+			password,
+		});
 
-        <input
-          placeholder="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="
-w-full
-px-4
-py-3
-rounded-2xl
-border
-"
-        />
+		if (error) {
+			setError("Invalid email or password");
 
-        {error && <p className="text-red-500 text-sm">{error}</p>}
+			setLoading(false);
 
-        <button
-          onClick={handleLogin}
-          className="
-w-full
-py-3
-rounded-2xl
-bg-purple-600
-text-white
-"
-        >
-          Login
-        </button>
+			return;
+		}
 
-        <p
-          className="
-text-sm
-text-gray-400
-text-center
-"
-        >
-          Demo: admin / admin
-        </p>
-      </div>
-    </div>
-  );
+		router.replace("/home");
+	}
+
+	return (
+		<div
+			className="
+      min-h-screen
+      flex
+      items-center
+      justify-center
+      px-5
+      "
+		>
+			<div
+				className="
+        w-full
+        max-w-md
+        space-y-6
+        "
+			>
+				<h1
+					className="
+          text-3xl
+          font-bold
+          "
+				>
+					Welcome back
+				</h1>
+
+				<input
+					placeholder="Email"
+					type="email"
+					value={email}
+					onChange={(e) => setEmail(e.target.value)}
+					className="
+          w-full
+          px-4
+          py-3
+          rounded-2xl
+          border
+          "
+				/>
+
+				<input
+					placeholder="Password"
+					type="password"
+					value={password}
+					onChange={(e) => setPassword(e.target.value)}
+					className="
+          w-full
+          px-4
+          py-3
+          rounded-2xl
+          border
+          "
+				/>
+
+				{error && (
+					<p
+						className="
+              text-red-500
+              text-sm
+              "
+					>
+						{error}
+					</p>
+				)}
+
+				<button
+					onClick={handleLogin}
+					disabled={loading}
+					className="
+          w-full
+          py-3
+          rounded-2xl
+          bg-purple-600
+          text-white
+          disabled:opacity-50
+          "
+				>
+					{loading ? "Logging in..." : "Login"}
+				</button>
+			</div>
+		</div>
+	);
 }
