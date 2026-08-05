@@ -14,7 +14,7 @@ import { motion } from "framer-motion";
 const items = [
   {
     label: "Home",
-    href: "/",
+    href: "/home",
     icon: Home,
   },
   {
