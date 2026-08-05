@@ -180,6 +180,117 @@ button:focus-visible {
 }
 
 /*
+  Enhanced touch feedback
+*/
+
+/* Press effect for touch targets */
+*:active {
+	tap-highlight-color: transparent;
+}
+
+/* Card press effect */
+.app-glass:active {
+	transform: scale(0.98);
+	transition: transform 0.1s ease-out;
+}
+
+/* List item press effect */
+.list-item:active {
+	background-color: rgba(99, 91, 255, 0.05);
+	transform: scale(0.99);
+	transition: all 0.1s ease-out;
+}
+
+/* Button touch delay simulation */
+button {
+	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
+}
+
+/* Enhanced press feedback */
+.touch-feedback:active {
+	transform: scale(0.95);
+	transition: transform 0.08s ease-out;
+}
+
+/* Haptic feedback simulation */
+.haptic-light {
+	animation: haptic-light 0.1s ease-out;
+}
+
+.haptic-medium {
+	animation: haptic-medium 0.15s ease-out;
+}
+
+.haptic-heavy {
+	animation: haptic-heavy 0.2s ease-out;
+}
+
+@keyframes haptic-light {
+	0%,
+	100% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(0.97);
+	}
+}
+
+@keyframes haptic-medium {
+	0%,
+	100% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(0.95);
+	}
+}
+
+@keyframes haptic-heavy {
+	0%,
+	100% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(0.92);
+	}
+}
+
+/* Touch ripple for better feedback */
+.touch-ripple {
+	position: relative;
+	overflow: hidden;
+}
+
+.touch-ripple::after {
+	content: "";
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 0;
+	height: 0;
+	background: rgba(99, 91, 255, 0.1);
+	border-radius: 50%;
+	transform: translate(-50%, -50%);
+	transition:
+		width 0.4s ease-out,
+		height 0.4s ease-out,
+		opacity 0.4s ease-out;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.touch-ripple:active::after {
+	width: 300%;
+	height: 300%;
+	opacity: 1;
+	transition:
+		width 0s,
+		height 0s,
+		opacity 0.2s ease-out;
+}
+
+/*
   Better text defaults
 */
 
