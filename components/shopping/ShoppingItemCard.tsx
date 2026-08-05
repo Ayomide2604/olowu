@@ -94,9 +94,8 @@ ${completed ? "bg-purple-600 text-white" : ""}
                   scale: completed ? [1, 1.2, 1] : 1,
                 }}
                 transition={{
-                  type: "spring",
-                  stiffness: 300,
-                  damping: 20,
+                  type: "tween",
+                  duration: 0.3,
                 }}
               >
                 {completed && <Check size={16} />}

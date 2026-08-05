@@ -226,7 +226,7 @@ export default function Home() {
           text-gray-500
           "
             >
-              Good morning 👋
+              Hello 👋
             </p>
 
             <h1
