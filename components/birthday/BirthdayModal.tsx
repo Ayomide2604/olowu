@@ -44,7 +44,6 @@ export default function BirthdayModal({ birthday, onClose, onSave }: Props) {
       date_of_birth: dateOfBirth,
       relationship,
       custom_relationship: relationship === "Other" ? customRelationship : null,
-      created_by: "", // Will be set by the parent component
     });
   }
 
@@ -160,7 +159,7 @@ export default function BirthdayModal({ birthday, onClose, onSave }: Props) {
                 type="date"
                 value={dateOfBirth}
                 onChange={(e) => setDateOfBirth(e.target.value)}
-                className="   px-4
+                className="px-4
               py-3
               rounded-2xl
               border
