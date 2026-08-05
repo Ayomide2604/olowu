@@ -25,6 +25,7 @@ import { getProfiles, getCurrentUserProfile } from "@/lib/supabase/profiles";
 import { getEvents, getEventsCount } from "@/lib/supabase/events";
 import { getTasksCount } from "@/lib/supabase/tasks";
 import { getUncompletedShoppingItemsCount } from "@/lib/supabase/shopping";
+import { getBirthdaysCount } from "@/lib/supabase/birthdays";
 
 
 
@@ -179,17 +180,18 @@ export default function Home() {
 
   async function loadOverviewCounts() {
     try {
-      const [tasksCount, eventsCount, shoppingCount] = await Promise.all([
+      const [tasksCount, eventsCount, shoppingCount, birthdaysCount] = await Promise.all([
         getTasksCount(),
         getEventsCount(),
         getUncompletedShoppingItemsCount(),
+        getBirthdaysCount(),
       ]);
 
       setOverviewCounts({
         tasks: tasksCount,
         shopping: shoppingCount,
         events: eventsCount,
-        birthdays: 0, // TODO: Implement birthdays count
+        birthdays: birthdaysCount,
       });
     } catch (error) {
       console.error("Failed to load overview counts:", error);
