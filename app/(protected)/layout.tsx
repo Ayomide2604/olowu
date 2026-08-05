@@ -1,5 +1,6 @@
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
+import Header from "@/components/layout/Header";
 import BottomNav from "@/components/layout/BottomNav";
 export default function ProtectedLayout({
   children,
@@ -9,6 +10,7 @@ export default function ProtectedLayout({
   return (
 
     <div className="bg-gray-50">
+      <Header />
 
       <main
         className="

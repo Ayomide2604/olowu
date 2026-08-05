@@ -7,6 +7,10 @@ export const metadata: Metadata = {
   title: "Olowu Family",
   description: "Family management app",
   manifest: "/manifest.json",
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon.svg",
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
